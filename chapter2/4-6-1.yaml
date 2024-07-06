@@ -1,0 +1,2 @@
+aws_profile: ${aws_profile}
+aws_region: ${aws_region}
