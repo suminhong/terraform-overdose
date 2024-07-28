@@ -3,9 +3,9 @@
 repos:
 - repo: local
   hooks:
-  - id: generate_readme
-    name: generate_readme
-    entry: ./generate_readme.sh
+  - id: tf-formatting
+    name: tf-formatting
+    entry: ./tf-formatting.sh
     language: script
     types: [file]
     pass_filenames: false
