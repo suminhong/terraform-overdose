@@ -12,3 +12,6 @@ find . -type f -name "*.tf" | while read -r tf_file; do
   # 원래 디렉토리로 돌아가기
   cd - > /dev/null
 done
+
+# Formatting
+terraform fmt -recursive
