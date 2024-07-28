@@ -1,0 +1,56 @@
+variable "vpc_name" {
+  description = "EC2가 존재할 VPC의 이름"
+  type        = string
+}
+
+variable "vpc_id" {
+  description = "EC2가 존재할 VPC의 ID"
+  type        = string
+}
+
+variable "subnet_id_map" {
+  description = "서브넷 ID 맵 데이터"
+  type        = map(map(string))
+}
+
+variable "sg_id_map" {
+  description = "보안 그룹 ID 맵 데이터"
+  type        = map(string)
+}
+
+variable "ec2_set" {
+  description = "보안 그룹 ID 맵 데이터"
+  type = map(object({
+    # required
+    env             = string
+    team            = string
+    service         = string
+    ami_id          = string
+    instance_type   = string
+    subnet          = string
+    az              = string
+    security_groups = list(string)
+    # optional
+    ec2_key           = optional(string)
+    ec2_role          = optional(string)
+    source_dest_check = optional(bool, true)
+    private_ip        = optional(string)
+    no_eip            = optional(bool, true)
+    root_volume = optional(object({
+      size = optional(number, 8)
+      type = optional(string, "gp3")
+    }), {})
+    additional_volumes = optional(set(object({
+      device = string
+      size   = number
+      type   = optional(string, "gp3")
+      iops   = optional(number, 3000)
+    })), [])
+  }))
+}
+
+variable "tags" {
+  description = "모든 리소스에 적용될 태그 (map)"
+  type        = map(string)
+  default     = {}
+}

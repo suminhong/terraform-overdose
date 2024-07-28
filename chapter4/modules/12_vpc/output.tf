@@ -18,6 +18,11 @@ output "subnet_ids" {
   value       = local.subnet_ids
 }
 
+output "subnet_ids_with_az" {
+  description = "The IDs of the Subnets per AZ"
+  value       = local.subnet_ids_with_az
+}
+
 output "public_rt_id" {
   description = "The ID of the Public Routing Table"
   value       = local.public_rt

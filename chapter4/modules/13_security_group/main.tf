@@ -3,8 +3,8 @@ data "aws_vpc" "this" {
 }
 
 locals {
-  vpc_name = var.vpc_info.name
-  vpc_id   = var.vpc_info.id
+  vpc_name = var.vpc_name
+  vpc_id   = var.vpc_id
 
   vpc_cidr = data.aws_vpc.this.cidr_block
   vpc_tags = data.aws_vpc.this.tags

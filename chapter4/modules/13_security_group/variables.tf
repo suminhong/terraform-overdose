@@ -1,9 +1,11 @@
-variable "vpc_info" {
-  description = "보안 그룹이 존재할 VPC의 이름과 ID"
-  type = object({
-    name = string
-    id   = string
-  })
+variable "vpc_name" {
+  description = "보안 그룹이 존재할 VPC의 이름"
+  type        = string
+}
+
+variable "vpc_id" {
+  description = "보안 그룹이 존재할 VPC의 ID"
+  type        = string
 }
 
 variable "sg_set" {
