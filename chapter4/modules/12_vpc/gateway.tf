@@ -7,7 +7,6 @@ resource "aws_internet_gateway" "this" {
   vpc_id = local.vpc_id
 
   tags = merge(
-    var.tags,
     local.module_tag,
     {
       Name = "${local.vpc_name}-igw",
@@ -41,7 +40,6 @@ resource "aws_eip" "this" {
   for_each = local.nat_set
 
   tags = merge(
-    var.tags,
     local.module_tag,
     {
       Name = "${local.vpc_name}-nat-${each.key}",
@@ -56,7 +54,6 @@ resource "aws_nat_gateway" "this" {
   allocation_id = aws_eip.this[each.key].id
 
   tags = merge(
-    var.tags,
     local.module_tag,
     {
       Name = "${local.vpc_name}-nat-${each.key}",

@@ -53,7 +53,6 @@ resource "aws_iam_role" "flowlog" {
   }
 
   tags = merge(
-    var.tags,
     local.module_tag,
     {
       Name = local.vpc_flowlog_cw.iam_role.name
@@ -68,7 +67,6 @@ resource "aws_cloudwatch_log_group" "flowlog" {
   retention_in_days = local.vpc_flowlog_cw.retention_in_days
 
   tags = merge(
-    var.tags,
     local.module_tag,
     {
       Name = "${local.vpc_name}-Log-CW"
@@ -85,7 +83,6 @@ resource "aws_flow_log" "cw" {
   vpc_id          = local.vpc_id
 
   tags = merge(
-    var.tags,
     local.module_tag,
     {
       Name = "${local.vpc_name}-FlowLog-CW"
@@ -100,7 +97,6 @@ resource "aws_s3_bucket" "flowlog" {
   bucket = local.vpc_flowlog_s3.bucket.name
 
   tags = merge(
-    var.tags,
     local.module_tag,
     {
       Name = local.vpc_flowlog_s3.bucket.name,
@@ -117,7 +113,6 @@ resource "aws_flow_log" "s3" {
   traffic_type         = local.vpc_flowlog_s3.traffic_type
 
   tags = merge(
-    var.tags,
     local.module_tag,
     {
       Name = "${local.vpc_name}-FlowLog-S3"

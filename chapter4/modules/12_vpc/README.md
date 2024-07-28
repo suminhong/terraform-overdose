@@ -48,5 +48,16 @@ No requirements.
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_cache_subnet_group_ids"></a> [cache\_subnet\_group\_ids](#output\_cache\_subnet\_group\_ids) | The IDs of the Cache Subnet Group |
+| <a name="output_db_subnet_group_ids"></a> [db\_subnet\_group\_ids](#output\_db\_subnet\_group\_ids) | The IDs of the DB Subnet Group |
+| <a name="output_igw_id"></a> [igw\_id](#output\_igw\_id) | The ID of the Internet Gateway |
+| <a name="output_nat_ids"></a> [nat\_ids](#output\_nat\_ids) | The IDs of the NAT Gateway |
+| <a name="output_private_rt_ids"></a> [private\_rt\_ids](#output\_private\_rt\_ids) | The IDs of the Private Routing Table per AZ |
+| <a name="output_public_rt_id"></a> [public\_rt\_id](#output\_public\_rt\_id) | The ID of the Public Routing Table |
+| <a name="output_subnet_ids"></a> [subnet\_ids](#output\_subnet\_ids) | The IDs of the Subnets |
+| <a name="output_vpc_cidr"></a> [vpc\_cidr](#output\_vpc\_cidr) | The CIDR of the VPC |
+| <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | The ID of the VPC |
+| <a name="output_vpc_name"></a> [vpc\_name](#output\_vpc\_name) | The Name of the VPC |
 <!-- END_TF_DOCS -->

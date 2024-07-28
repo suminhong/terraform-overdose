@@ -8,7 +8,6 @@ resource "aws_db_subnet_group" "this" {
   subnet_ids = local.subnet_ids[each.key]
 
   tags = merge(
-    var.tags,
     local.module_tag,
     {
       Name         = "${local.vpc_name}-${each.key}",
@@ -24,7 +23,6 @@ resource "aws_elasticache_subnet_group" "this" {
   subnet_ids = local.subnet_ids[each.key]
 
   tags = merge(
-    var.tags,
     local.module_tag,
     {
       Name         = "${local.vpc_name}-${each.key}",

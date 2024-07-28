@@ -15,12 +15,15 @@ locals {
   subnet_azs     = var.attribute.subnet_azs
   subnets        = var.attribute.subnets
 
-  module_tag = {
-    tf_module = "10_vpc"
-    Env       = local.env
-    Team      = var.attribute.team
-    VPC       = "${local.vpc_name}-vpc"
-  }
+  module_tag = merge(
+    var.tags,
+    {
+      tf_module = "12_vpc"
+      Env       = local.env
+      Team      = var.attribute.team
+      VPC       = "${local.vpc_name}-vpc"
+    }
+  )
 }
 
 ###################################################
@@ -32,7 +35,6 @@ resource "aws_vpc" "this" {
   enable_dns_hostnames = true
 
   tags = merge(
-    var.tags,
     local.module_tag,
     {
       Name = "${local.vpc_name}-vpc",
@@ -58,7 +60,6 @@ resource "aws_route_table" "public" {
   vpc_id = local.vpc_id
 
   tags = merge(
-    var.tags,
     local.module_tag,
     {
       Name = "${local.vpc_name}-rt-pub",
@@ -72,7 +73,6 @@ resource "aws_route_table" "private" {
   vpc_id   = local.vpc_id
 
   tags = merge(
-    var.tags,
     local.module_tag,
     {
       Name = "${local.vpc_name}-rt-pri-${each.value}",
@@ -129,7 +129,6 @@ resource "aws_subnet" "this" {
   map_public_ip_on_launch = split("-", each.value.name)[0] == "pub"
 
   tags = merge(
-    var.tags,
     local.module_tag,
     {
       Name = "${local.vpc_name}-subnet-${each.value.name}-${each.value.az}"
