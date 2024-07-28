@@ -18,7 +18,9 @@ locals {
   )
 }
 
+###################################################
 # Security Group
+###################################################
 resource "aws_security_group" "this" {
   for_each    = var.sg_set
   name        = "${local.vpc_name}-sg-${each.key}"
@@ -40,7 +42,9 @@ resource "aws_security_group" "this" {
   )
 }
 
+###################################################
 # Inbound Rule
+###################################################
 module "inbound_rule" {
   source   = "./inbound_rule"
   for_each = var.sg_set
