@@ -60,11 +60,6 @@ variable "attribute" {
     error_message = "각 subnet의 netnum list 길이는 subnet_azs의 길이 (${length(var.attribute.subnet_azs)}) 보다 짧아야 합니다."
   }
 
-  validation { # Public Subnet이 없는데 NAT를 생성하진 않는가?
-    condition     = !(!anytrue([for k, v in var.attribute.subnets : split("-", k)[0] == "pub"]) && (var.attribute.nat.create == true))
-    error_message = "Public 서브넷이 없으면 NAT를 생성할 수 없습니다."
-  }
-
   validation { # NAT용 Subnet이 subnet list에 있는 이름인가?
     condition     = !(var.attribute.nat.create && !contains([for k, v in var.attribute.subnets : k], var.attribute.nat.subnet))
     error_message = "nat.subnet 이름은 subnets에 기재된 항목 중 하나여야 합니다."
