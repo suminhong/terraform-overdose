@@ -1,17 +1,10 @@
-locals {
-  name = "${var.requester_vpc.vpc_name}-to-${var.accepter_vpc.vpc_name}"
-
-  requester_dns_resolution = var.requester_vpc.allow_dns_resolution
-  accepter_dns_resolution  = var.accepter_vpc.allow_dns_resolution
-}
-
 ###################################################
 # VPC Peering Connection
 ###################################################
 resource "aws_vpc_peering_connection" "this" {
   provider = aws.requester
 
-  peer_owner_id = local.is_cross_account ? local.accepter_account : null
+  peer_owner_id = local.is_cross_account ? local.accepter_account_id : null
   peer_region   = local.is_cross_region ? local.accepter_region : null
 
   peer_vpc_id = var.accepter_vpc.vpc_id
@@ -34,9 +27,8 @@ resource "aws_vpc_peering_connection" "this" {
   }
 
   tags = merge(
-    var.tags,
+    local.module_tag,
     {
-      Name = local.name
       Side = "Requester"
     }
   )
@@ -52,9 +44,8 @@ resource "aws_vpc_peering_connection_accepter" "this" {
   auto_accept               = true
 
   tags = merge(
-    var.tags,
+    local.module_tag,
     {
-      Name = local.name
       Side = "Accepter"
     }
   )
