@@ -1,0 +1,3 @@
+protocol,from_port,to_port,source,desc
+tcp,3306,3306,self-vpc,
+tcp,3306,3306,self,

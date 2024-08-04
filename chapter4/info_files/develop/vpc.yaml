@@ -1,0 +1,22 @@
+# vpc 1개에 대한 구성 파일.
+
+cidr: 10.10.0.0/16
+
+env: develop
+team: devops
+
+subnet_newbits: 8
+subnet_azs: [a, c]
+subnets:
+  pri-network: [0, 1]
+
+nat:
+  create: false
+
+db_subnets: []
+
+vpc_flowlogs:
+  cloudwatch:
+    enable: false
+  s3:
+    enable: false
