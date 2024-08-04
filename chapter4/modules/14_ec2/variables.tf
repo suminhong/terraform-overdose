@@ -47,6 +47,11 @@ variable "ec2_set" {
       iops   = optional(number, 3000)
     })), [])
   }))
+
+  validation { # env 값이 develop, staging, rc, production 중 하나인가?
+    condition     = alltrue([for k, v in var.ec2_set : contains(["develop", "staging", "rc", "production"], v.env)])
+    error_message = "env 값은 반드시 [develop, staging, rc, production] 중 하나여야 합니다."
+  }
 }
 
 variable "tags" {

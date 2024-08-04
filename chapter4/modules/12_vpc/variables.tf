@@ -40,6 +40,11 @@ variable "attribute" {
     }), {})
   })
 
+  validation { # env 값이 develop, staging, rc, production 중 하나인가?
+    condition     = contains(["develop", "staging", "rc", "production"], var.attribute.env)
+    error_message = "env 값은 반드시 [develop, staging, rc, production] 중 하나여야 합니다."
+  }
+
   validation { # subnet_azs에 알파벳 한 글자씩만 들어가는가?
     condition     = alltrue([for az in var.attribute.subnet_azs : can(regex("^[a-zA-Z]$", az))])
     error_message = "subnet_azs엔 알파벳 한 글자씩만 입력 가능합니다. ex) a, b, c, d"
