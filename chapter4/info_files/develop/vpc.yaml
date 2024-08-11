@@ -14,9 +14,3 @@ nat:
   create: false
 
 db_subnets: []
-
-vpc_flowlogs:
-  cloudwatch:
-    enable: false
-  s3:
-    enable: false

@@ -18,26 +18,6 @@ variable "attribute" {
       per_az = optional(bool, false)
     }), {})
     db_subnets = optional(list(string), [])
-    vpc_flowlogs = optional(object({
-      cloudwatch = optional(object({
-        enable = optional(bool, false)
-        iam_role = optional(object({
-          create = optional(bool, false)
-          name   = optional(string, "")
-        }), {})
-        retention_in_days = optional(number, 7)
-        traffic_type      = optional(string, "ALL")
-      }), {})
-      s3 = optional(object({
-        enable = optional(bool, false)
-        create = optional(bool, false)
-        bucket = optional(object({
-          create = optional(bool, false)
-          name   = optional(string, "")
-        }), {})
-        traffic_type = optional(string, "ALL")
-      }), {})
-    }), {})
   })
 
   validation { # env 값이 develop, staging, rc, production 중 하나인가?
@@ -74,11 +54,6 @@ variable "attribute" {
     condition = alltrue([for name in var.attribute.db_subnets : contains([for k, v in var.attribute.subnets : k], name)
     ])
     error_message = "db_subnets 리스트 내 이름들은 subnets에 기재된 항목 중 하나여야 합니다."
-  }
-
-  validation { # vpc_flowlogs.*.traffic_type들이 정해진 이름을 사용하는가?
-    condition     = alltrue([for k, v in var.attribute.vpc_flowlogs : contains(["ACCEPT", "REJECT", "ALL"], v.traffic_type)])
-    error_message = "vpc_flowlogs.*.traffic_type 은 [ACCEPT, REJECT, ALL] 중 하나여야 합니다."
   }
 }
 
