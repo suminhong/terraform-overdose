@@ -17,7 +17,6 @@ variable "attribute" {
       subnet = optional(string, "")
       per_az = optional(bool, false)
     }), {})
-    db_subnets = optional(list(string), [])
   })
 
   validation { # env 값이 develop, staging, rc, production 중 하나인가?
@@ -48,12 +47,6 @@ variable "attribute" {
   validation { # NAT용 Subnet이 subnet list에 있는 이름인가?
     condition     = !(var.attribute.nat.create && !contains([for k, v in var.attribute.subnets : k], var.attribute.nat.subnet))
     error_message = "nat.subnet 이름은 subnets에 기재된 항목 중 하나여야 합니다."
-  }
-
-  validation { # DB용 Subnet들이 모두 subnet list에 있는 이름인가?
-    condition = alltrue([for name in var.attribute.db_subnets : contains([for k, v in var.attribute.subnets : k], name)
-    ])
-    error_message = "db_subnets 리스트 내 이름들은 subnets에 기재된 항목 중 하나여야 합니다."
   }
 }
 

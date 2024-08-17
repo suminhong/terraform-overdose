@@ -44,17 +44,3 @@ output "nat_ids" {
     for k in local.nat_set : k => aws_nat_gateway.this[k].id
   }
 }
-
-output "db_subnet_group_ids" {
-  description = "The IDs of the DB Subnet Group"
-  value = {
-    for k, v in aws_db_subnet_group.this : k => v.id
-  }
-}
-
-output "cache_subnet_group_ids" {
-  description = "The IDs of the Cache Subnet Group"
-  value = {
-    for k, v in aws_elasticache_subnet_group.this : k => v.id
-  }
-}

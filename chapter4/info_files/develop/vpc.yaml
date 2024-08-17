@@ -12,5 +12,3 @@ subnets:
 
 nat:
   create: false
-
-db_subnets: []

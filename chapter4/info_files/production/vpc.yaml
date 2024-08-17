@@ -19,22 +19,4 @@ nat:
   subnet: pub-nat
   per_az: true # nat.subnet의 가용영역별로 생성
 
-db_subnets:
-- pri-db
-
-vpc_flowlogs:
-  cloudwatch:
-    enable: true
-    retention_in_days: 7
-    iam_role:
-      create: true
-      name: vpc-flowlog-role
-    traffic_type: ALL
-  s3:
-    enable: true
-    bucket:
-      create: true
-      name: honglab-vpc-flowlog-s3
-    traffic_type: ALL
-
 # 추가로 고려할만한 구성 : rtb_override

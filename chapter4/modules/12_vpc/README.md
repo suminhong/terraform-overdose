@@ -19,9 +19,7 @@ No requirements.
 
 | Name | Type |
 |------|------|
-| [aws_db_subnet_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_subnet_group) | resource |
 | [aws_eip.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eip) | resource |
-| [aws_elasticache_subnet_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_subnet_group) | resource |
 | [aws_internet_gateway.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/internet_gateway) | resource |
 | [aws_nat_gateway.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/nat_gateway) | resource |
 | [aws_route.private_nat](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route) | resource |
@@ -36,7 +34,7 @@ No requirements.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_attribute"></a> [attribute](#input\_attribute) | VPC 속성값 정의 | <pre>object({<br>    cidr           = string<br>    env            = optional(string, "develop")<br>    team           = optional(string, "devops")<br>    subnet_newbits = optional(number, 8)<br>    subnet_azs     = list(string)<br>    subnets        = optional(map(list(number)), {})<br>    nat = optional(object({<br>      create = optional(bool, false)<br>      subnet = optional(string, "")<br>      per_az = optional(bool, false)<br>    }), {})<br>    db_subnets = optional(list(string), [])<br>  })</pre> | n/a | yes |
+| <a name="input_attribute"></a> [attribute](#input\_attribute) | VPC 속성값 정의 | <pre>object({<br>    cidr           = string<br>    env            = optional(string, "develop")<br>    team           = optional(string, "devops")<br>    subnet_newbits = optional(number, 8)<br>    subnet_azs     = list(string)<br>    subnets        = optional(map(list(number)), {})<br>    nat = optional(object({<br>      create = optional(bool, false)<br>      subnet = optional(string, "")<br>      per_az = optional(bool, false)<br>    }), {})<br>  })</pre> | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | 구분되는 VPC 이름 | `string` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | 모든 리소스에 적용될 태그 (map) | `map(string)` | `{}` | no |
 
@@ -44,8 +42,6 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_cache_subnet_group_ids"></a> [cache\_subnet\_group\_ids](#output\_cache\_subnet\_group\_ids) | The IDs of the Cache Subnet Group |
-| <a name="output_db_subnet_group_ids"></a> [db\_subnet\_group\_ids](#output\_db\_subnet\_group\_ids) | The IDs of the DB Subnet Group |
 | <a name="output_igw_id"></a> [igw\_id](#output\_igw\_id) | The ID of the Internet Gateway |
 | <a name="output_nat_ids"></a> [nat\_ids](#output\_nat\_ids) | The IDs of the NAT Gateway |
 | <a name="output_private_rt_ids"></a> [private\_rt\_ids](#output\_private\_rt\_ids) | The IDs of the Private Routing Table per AZ |
