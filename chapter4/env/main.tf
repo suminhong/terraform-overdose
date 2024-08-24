@@ -1,5 +1,5 @@
 locals {
-  info_files = "../info_files"
+  info_files = "${path.root}/../info_files"
 
   vpc_set = toset([
     for vpcfile in fileset(local.info_files, "*/vpc.yaml") : dirname(vpcfile)
