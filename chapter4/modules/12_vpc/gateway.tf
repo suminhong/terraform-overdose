@@ -50,7 +50,7 @@ resource "aws_eip" "this" {
 ## NAT GW 생성
 resource "aws_nat_gateway" "this" {
   for_each      = local.nat_set
-  subnet_id     = aws_subnet.this["${local.nat.subnet}_${each.key}"].id
+  subnet_id     = local.subnet_ids_with_az[local.nat.subnet][each.key]
   allocation_id = aws_eip.this[each.key].id
 
   tags = merge(

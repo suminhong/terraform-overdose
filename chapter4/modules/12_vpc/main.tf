@@ -3,7 +3,7 @@ module "current" {
 }
 
 locals {
-  aws_region    = module.current.region_name
+  region_name   = module.current.region_name
   available_azs = module.current.az_names
 
   env = var.attribute.env
@@ -82,7 +82,7 @@ resource "aws_route_table" "private" {
 
 ## Routing Table Output들 정리
 locals {
-  public_rt = try(aws_route_table.public.*.id[0], "")
+  public_rt = try(aws_route_table.public[0].id, "")
   private_rts = {
     for k, v in aws_route_table.private : k => v.id
   }
@@ -97,36 +97,31 @@ locals {
 ###################################################
 locals {
   ## 반복을 수월하게 돌리기 위한 데이터 처리 작업
-  ### 서브넷 내 netnum별 az와 CIDR 계산해서 매핑
-  subnets_info = {
-    for k, v in local.subnets : k => zipmap(
-      slice(local.subnet_azs, 0, length(v)),
-      [for netnum in v : cidrsubnet(local.vpc_cidr, local.subnet_newbits, netnum)]
-    )
-  }
+  ### 2차원을 1차원으로 평탄화 필요 - 리스트로 flatten 사용
+  subnets_data = flatten([
+    for name, indices in local.subnets : [
+      for idx in indices : {
+        name      = name
+        az        = local.subnet_azs[index(indices, idx)]
+        cidr      = cidrsubnet(local.vpc_cidr, local.subnet_newbits, idx)
+        is_public = split("-", name)[0] == "pub"
+      }
+    ]
+  ])
 
   ### 실제로 반복에 사용될 변수 생성
-  subnets_set = {
-    for i in flatten([
-      for k, v in local.subnets_info : [
-        for az, cidr in v : {
-          name      = k
-          az        = az
-          cidr      = cidr
-          is_public = split("-", k)[0] == "pub"
-        }
-      ]
-    ]) : "${i.name}_${i.az}" => i
+  subnets_map = {
+    for s in local.subnets_data : "${replace(s.name, "-", "_")}_${s.az}" => s
   }
 }
 
 ## 서브넷 생성
 resource "aws_subnet" "this" {
-  for_each                = local.subnets_set
+  for_each                = local.subnets_map
   cidr_block              = each.value.cidr
-  availability_zone       = "${local.aws_region}${each.value.az}"
+  availability_zone       = "${local.region_name}${each.value.az}"
   vpc_id                  = local.vpc_id
-  map_public_ip_on_launch = split("-", each.value.name)[0] == "pub"
+  map_public_ip_on_launch = each.value.is_public
 
   tags = merge(
     local.module_tag,
@@ -137,8 +132,8 @@ resource "aws_subnet" "this" {
 
   lifecycle {
     precondition { # 서브넷에 사용될 az가 사용 가능한 가용 영역인가?
-      condition     = contains(local.available_azs, "${local.aws_region}${each.value.az}")
-      error_message = "${upper(each.value.az)} zone은 현재 리전(${local.aws_region})에서 유효하지 않습니다."
+      condition     = contains(local.available_azs, "${local.region_name}${each.value.az}")
+      error_message = "${upper(each.value.az)} zone은 현재 리전(${local.region_name})에서 유효하지 않습니다."
     }
   }
 }
@@ -146,14 +141,14 @@ resource "aws_subnet" "this" {
 ## Subnet Output들 정리
 locals {
   subnet_ids = {
-    for k, v in local.subnets_info : k => compact([
-      for az in local.subnet_azs : try(aws_subnet.this["${k}_${az}"].id, "")
-    ])
+    for k, v in local.subnets : k => [
+      for az in slice(local.subnet_azs, 0, length(v)) : aws_subnet.this["${replace(k, "-", "_")}_${az}"].id
+    ]
   }
 
   subnet_ids_with_az = {
-    for k, v in local.subnets_info : k => {
-      for az in local.subnet_azs : az => try(aws_subnet.this["${k}_${az}"].id, null)
+    for k, v in local.subnets : k => {
+      for az in slice(local.subnet_azs, 0, length(v)) : az => aws_subnet.this["${replace(k, "-", "_")}_${az}"].id
     }
   }
 }
@@ -164,7 +159,7 @@ locals {
 ## Public Subnets -> Public RTB
 ## Priavte Subnets -> Private RTB[AZ]
 resource "aws_route_table_association" "this" {
-  for_each       = local.subnets_set
-  route_table_id = each.value.is_public ? local.public_rt : local.private_rts[element(local.subnet_azs, index(local.subnet_azs, each.value.az) % length(local.subnet_azs))]
+  for_each       = local.subnets_map
+  route_table_id = each.value.is_public ? local.public_rt : local.private_rts[each.value.az]
   subnet_id      = aws_subnet.this[each.key].id
 }

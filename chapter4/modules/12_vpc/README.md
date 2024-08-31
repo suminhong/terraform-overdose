@@ -42,13 +42,13 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_igw_id"></a> [igw\_id](#output\_igw\_id) | The ID of the Internet Gateway |
-| <a name="output_nat_ids"></a> [nat\_ids](#output\_nat\_ids) | The IDs of the NAT Gateway |
-| <a name="output_private_rt_ids"></a> [private\_rt\_ids](#output\_private\_rt\_ids) | The IDs of the Private Routing Table per AZ |
-| <a name="output_public_rt_id"></a> [public\_rt\_id](#output\_public\_rt\_id) | The ID of the Public Routing Table |
-| <a name="output_subnet_ids"></a> [subnet\_ids](#output\_subnet\_ids) | The IDs of the Subnets |
-| <a name="output_subnet_ids_with_az"></a> [subnet\_ids\_with\_az](#output\_subnet\_ids\_with\_az) | The IDs of the Subnets per AZ |
-| <a name="output_vpc_cidr"></a> [vpc\_cidr](#output\_vpc\_cidr) | The CIDR of the VPC |
-| <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | The ID of the VPC |
-| <a name="output_vpc_name"></a> [vpc\_name](#output\_vpc\_name) | The Name of the VPC |
+| <a name="output_igw_id"></a> [igw\_id](#output\_igw\_id) | 인터넷 게이트웨이 ID |
+| <a name="output_nat_ids"></a> [nat\_ids](#output\_nat\_ids) | AZ별 나트 게이트웨이 ID 맵 |
+| <a name="output_private_rt_ids"></a> [private\_rt\_ids](#output\_private\_rt\_ids) | AZ별 프라이빗 라우팅 테이블 ID 맵 |
+| <a name="output_public_rt_id"></a> [public\_rt\_id](#output\_public\_rt\_id) | 퍼블릭 라우팅 테이블 ID |
+| <a name="output_subnet_ids"></a> [subnet\_ids](#output\_subnet\_ids) | 서브넷 이름별 ID 리스트 |
+| <a name="output_subnet_ids_with_az"></a> [subnet\_ids\_with\_az](#output\_subnet\_ids\_with\_az) | 서브넷 이름별/AZ별 ID 맵 |
+| <a name="output_vpc_cidr"></a> [vpc\_cidr](#output\_vpc\_cidr) | VPC CIDR |
+| <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | VPC ID |
+| <a name="output_vpc_name"></a> [vpc\_name](#output\_vpc\_name) | VPC 이름 |
 <!-- END_TF_DOCS -->
