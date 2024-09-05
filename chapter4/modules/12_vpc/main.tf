@@ -131,9 +131,15 @@ resource "aws_subnet" "this" {
   )
 
   lifecycle {
-    precondition { # 서브넷에 사용될 az가 사용 가능한 가용 영역인가?
+    precondition { # 3. 서브넷에 사용될 az가 사용 가능한 가용 영역인가?
       condition     = contains(local.available_azs, "${local.region_name}${each.value.az}")
-      error_message = "${upper(each.value.az)} zone은 현재 리전(${local.region_name})에서 유효하지 않습니다."
+      error_message = "[${local.vpc_name} VPC] ${upper(each.value.az)} zone은 현재 리전(${local.region_name})에서 유효하지 않습니다. 사용 가능한 영역 : [${join(", ", [for az in local.available_azs : trimprefix(az, local.region_name)])}]"
+    }
+
+    precondition { # 4. 서브넷의 이름이 pub or pri 로 시작하는가?
+      # condition     = contains(["pub", "pri"], split("-", each.value.name)[0])
+      condition     = startswith(each.value.name, "pub-") || startswith(each.value.name, "pri-")
+      error_message = "[${local.vpc_name} VPC] ${each.value.name} 이란 서브넷 이름은 유효하지 않습니다. subnets 이름들은 모두 [pub-, pri-] 중 하나로 시작해야 합니다."
     }
   }
 }
