@@ -61,7 +61,7 @@ resource "aws_nat_gateway" "this" {
   )
 
   lifecycle {
-    precondition { # NAT Gateway가 Public Subnet에 생성되는가?
+    precondition { # 7. NAT Gateway가 Public Subnet에 생성되는가?
       condition     = split("-", local.nat.subnet)[0] == "pub"
       error_message = "NAT Gateway는 Public Subnet에만 만들 수 있습니다."
     }
