@@ -86,10 +86,6 @@ locals {
   private_rts = {
     for k, v in aws_route_table.private : k => v.id
   }
-
-  all_rts = compact(concat([local.public_rt], [
-    for k, v in local.private_rts : v
-  ]))
 }
 
 ###################################################
