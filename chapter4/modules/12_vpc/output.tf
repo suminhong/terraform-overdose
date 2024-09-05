@@ -35,7 +35,7 @@ output "private_rt_ids" {
 
 output "igw_id" {
   description = "인터넷 게이트웨이 ID"
-  value       = try(aws_internet_gateway.this.*.id[0], null)
+  value       = try(aws_internet_gateway.this[0].id, null)
 }
 
 output "nat_ids" {
