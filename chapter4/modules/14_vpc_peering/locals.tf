@@ -24,7 +24,7 @@ locals {
     var.tags,
     {
       Name      = local.name,
-      tf_module = "15_vpc_peering",
+      tf_module = "14_vpc_peering",
     }
   )
 }

@@ -18,7 +18,7 @@ locals {
   module_tag = merge(
     var.tags,
     {
-      tf_module = "12_vpc"
+      tf_module = "11_vpc"
       Env       = local.env
       Team      = var.attribute.team
       VPC       = "${local.vpc_name}-vpc"

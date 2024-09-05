@@ -5,7 +5,7 @@ locals {
   module_tag = merge(
     var.tags,
     {
-      tf_module = "14_ec2"
+      tf_module = "13_ec2"
     }
   )
 }
