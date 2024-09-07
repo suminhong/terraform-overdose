@@ -14,7 +14,7 @@ No requirements.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_merge_sg_rulse_set"></a> [merge\_sg\_rulse\_set](#module\_merge\_sg\_rulse\_set) | ../utility/9_3_merge_map_in_list | n/a |
+| <a name="module_merge_inbound_rule_set"></a> [merge\_inbound\_rule\_set](#module\_merge\_inbound\_rule\_set) | ../utility/9_3_merge_map_in_list | n/a |
 
 ## Resources
 

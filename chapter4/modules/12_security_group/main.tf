@@ -68,21 +68,21 @@ locals {
     my-ip    = ["${chomp(data.http.myip.response_body)}/32"]
   }
 
-  sg_rule_set = [
+  inbound_rule_set = [
     for sg, rules in var.sg_set : {
       for r in rules : "${sg}_${r.protocol}_${r.from_port}_${r.to_port}_${r.source}" => merge(r, { sg = sg })
     }
   ]
-  merged_sg_rule_set = module.merge_sg_rulse_set.output
+  merged_inbound_rule_set = module.merge_inbound_rule_set.output
 }
 
-module "merge_sg_rulse_set" {
+module "merge_inbound_rule_set" {
   source = "../utility/9_3_merge_map_in_list"
-  input  = local.sg_rule_set
+  input  = local.inbound_rule_set
 }
 
 resource "aws_security_group_rule" "inbound" {
-  for_each          = local.merged_sg_rule_set
+  for_each          = local.merged_inbound_rule_set
   security_group_id = aws_security_group.this[each.value.sg].id
   type              = "ingress"
   from_port         = each.value.from_port
