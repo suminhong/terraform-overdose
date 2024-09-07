@@ -8,19 +8,23 @@ No requirements.
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_http"></a> [http](#provider\_http) | n/a |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_inbound_rule"></a> [inbound\_rule](#module\_inbound\_rule) | ./inbound_rule | n/a |
+| <a name="module_merge_sg_rulse_set"></a> [merge\_sg\_rulse\_set](#module\_merge\_sg\_rulse\_set) | ../utility/9_3_merge_map_in_list | n/a |
 
 ## Resources
 
 | Name | Type |
 |------|------|
 | [aws_security_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
+| [aws_security_group_rule.inbound](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
+| [aws_security_group_rule.outbound](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_vpc.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/vpc) | data source |
+| [http_http.myip](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |
 
 ## Inputs
 
