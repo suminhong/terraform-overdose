@@ -19,7 +19,7 @@ locals {
 ###################################################
 module "vpc" {
   for_each = local.vpc_set
-  source   = "../modules/12_vpc"
+  source   = "../modules/11_vpc"
 
   name      = each.key
   attribute = local.vpc_info_map[each.key]
@@ -32,7 +32,7 @@ module "vpc" {
 ###################################################
 module "sg" {
   for_each = local.vpc_set
-  source   = "../modules/13_security_group"
+  source   = "../modules/12_security_group"
 
   vpc_name = each.key
   vpc_id   = module.vpc[each.key].vpc_id
@@ -50,7 +50,7 @@ module "sg" {
 ###################################################
 module "ec2" {
   for_each = local.vpc_set
-  source   = "../modules/14_ec2"
+  source   = "../modules/13_ec2"
 
   vpc_name = each.key
   vpc_id   = module.vpc[each.key].vpc_id
@@ -70,7 +70,7 @@ module "ec2" {
 # Create VPC Peering
 ###################################################
 module "vpc_peering" {
-  source = "../modules/15_vpc_peering"
+  source = "../modules/14_vpc_peering"
   providers = {
     aws.requester = aws
     aws.accepter  = aws
