@@ -1,7 +1,7 @@
 ## Tag를 위한 입력
 env: production
 team: devops
-service: test
+service: application
 
 ## 실제 EC2 Instance를 만들기 위한 정보
 ami_id: ami-045f2d6eeb07ce8c0
