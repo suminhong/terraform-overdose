@@ -1,3 +1,13 @@
+# 이미지 정보 불러오기
+data "aws_ami" "this" {
+  for_each = var.ec2_set
+
+  filter {
+    name   = "image-id"
+    values = [each.value.ami_id]
+  }
+}
+
 locals {
   vpc_name = var.vpc_name
   vpc_id   = var.vpc_id
@@ -8,13 +18,42 @@ locals {
       tf_module = "13_ec2"
     }
   )
+
+  # AMI별 루트 볼륨 사이즈 계산
+  ami_root_volume_size = {
+    for k, v in data.aws_ami.this : k => [
+      for device in v.block_device_mappings : device.ebs.volume_size
+      if device.device_name == v.root_device_name
+    ][0]
+  }
+
+  # ec2_set 변수 재정의
+  ec2_set = {
+    for k, v in var.ec2_set : k => merge(v, {
+      full_name = "${var.vpc_name}-${split("-", v.subnet)[0]}-${k}",
+      tags = {
+        Name    = "${var.vpc_name}-${split("-", v.subnet)[0]}-${k}"
+        EC2     = "${var.vpc_name}-${split("-", v.subnet)[0]}-${k}"
+        Env     = v.env
+        Team    = v.team
+        Service = v.service
+      }
+      instance_family = split(".", v.instance_type)[0]
+      ami_info = {
+        root_volume_size = local.ami_root_volume_size[k]
+        architecture     = data.aws_ami.this[k].architecture
+        name             = data.aws_ami.this[k].name
+        platform         = data.aws_ami.this[k].platform == "" ? "Linux" : data.aws_ami.this[k].platform
+      }
+    })
+  }
 }
 
 ###################################################
 # Create EC2
 ###################################################
 resource "aws_instance" "this" {
-  for_each = var.ec2_set
+  for_each = local.ec2_set
 
   subnet_id              = var.subnet_id_map[each.value.subnet][each.value.az]
   ami                    = each.value.ami_id
@@ -23,7 +62,6 @@ resource "aws_instance" "this" {
 
   iam_instance_profile = each.value.ec2_role
   instance_type        = each.value.instance_type
-  source_dest_check    = each.value.source_dest_check
   private_ip           = each.value.private_ip
 
   root_block_device {
@@ -33,36 +71,49 @@ resource "aws_instance" "this" {
 
     tags = merge(
       local.module_tag,
+      each.value.tags,
       {
-        Name    = "${var.vpc_name}-${split("-", each.value.subnet)[0]}-${each.key}-root"
-        EC2     = "${var.vpc_name}-${split("-", each.value.subnet)[0]}-${each.key}"
-        Env     = each.value.env
-        Team    = each.value.team
-        Service = each.value.service
+        Name = "${each.value.full_name}-root"
       }
     )
   }
 
   tags = merge(
     local.module_tag,
+    each.value.tags,
     {
-      Name    = "${var.vpc_name}-${split("-", each.value.subnet)[0]}-${each.key}"
-      EC2     = "${var.vpc_name}-${split("-", each.value.subnet)[0]}-${each.key}"
-      Env     = each.value.env
-      Team    = each.value.team
-      Service = each.value.service
+      Image_Arch     = each.value.ami_info.architecture
+      Image_Name     = each.value.ami_info.name
+      Image_Platform = each.value.ami_info.platform
     }
   )
+
+  lifecycle {
+    precondition {
+      condition     = !(startswith(each.value.ami_info.architecture, "x86") && strcontains(each.value.instance_family, "g"))
+      error_message = "[${local.vpc_name} VPC/${each.key} EC2] x86 아키텍처 이미지는 그래비톤 타입으로 실행할 수 없습니다. (현재 선택된 인스턴스 패밀리 : ${each.value.instance_family})"
+    }
+
+    precondition {
+      condition     = !(startswith(each.value.ami_info.architecture, "arm") && !strcontains(each.value.instance_family, "g"))
+      error_message = "[${local.vpc_name} VPC/${each.key} EC2] arm 아키텍처 이미지는 그래비톤 타입으로만 실행할 수 있습니다. (현재 선택된 인스턴스 패밀리 : ${each.value.instance_family})"
+    }
+
+    precondition {
+      condition     = each.value.root_volume.size >= each.value.ami_info.root_volume_size
+      error_message = "[${local.vpc_name} VPC/${each.key} EC2] 루트 볼륨 사이즈는 ${each.value.ami_info.root_volume_size} 이상이어야 합니다."
+    }
+  }
 }
 
 ###################################################
 # Create EIP
 ###################################################
-## Public EC2인 경우 && no_eip == false 인 경우
+## Public EC2인 경우
 resource "aws_eip" "this" {
   for_each = {
-    for k, v in var.ec2_set : k => v
-    if split("-", v.subnet)[0] == "pub" && !v.no_eip
+    for k, v in local.ec2_set : k => v
+    if split("-", v.subnet)[0] == "pub"
   }
 
   domain = "vpc"
@@ -72,13 +123,7 @@ resource "aws_eip" "this" {
 
   tags = merge(
     local.module_tag,
-    {
-      Name    = "${var.vpc_name}-${split("-", each.value.subnet)[0]}-${each.key}"
-      EC2     = "${var.vpc_name}-${split("-", each.value.subnet)[0]}-${each.key}"
-      Env     = each.value.env
-      Team    = each.value.team
-      Service = each.value.service
-    }
+    each.value.tags,
   )
 }
 
@@ -87,7 +132,7 @@ resource "aws_eip" "this" {
 ###################################################
 locals {
   ec2_volume_set = [
-    for ec2_name, ec2_attribute in var.ec2_set : {
+    for ec2_name, ec2_attribute in local.ec2_set : {
       for volume_set in ec2_attribute.additional_volumes : "${ec2_name}_${volume_set.device}" => merge(
         { ec2_name = ec2_name }, ec2_attribute, volume_set
       )
@@ -112,12 +157,9 @@ resource "aws_ebs_volume" "this" {
 
   tags = merge(
     local.module_tag,
+    each.value.tags,
     {
-      Name    = "${var.vpc_name}-${split("-", each.value.subnet)[0]}-${each.value.ec2_name}-${each.value.device}"
-      EC2     = "${var.vpc_name}-${split("-", each.value.subnet)[0]}-${each.value.ec2_name}"
-      Env     = each.value.env
-      Team    = each.value.team
-      Service = each.value.service
+      Name = "${each.value.full_name}-${each.value.device}"
     }
   )
 }

@@ -1,19 +1,24 @@
-## Tag를 위한 입력
+# Tag를 위한 입력
 env: production
 team: devops
 service: application
 
-## 실제 EC2 Instance를 만들기 위한 정보
-ami_id: ami-045f2d6eeb07ce8c0
-ec2_key: terraform-ec2-key # 별도로 콘솔에서 생성 후 사용
-ec2_role: terraform-ec2-role # 이미 존재하는 Role만 사용 가능
-instance_type: t3.medium
+# 실제 EC2 Instance를 만들기 위한 정보
+## network 정보
 subnet: pri-app
 az: a
+security_groups:
+  - linux
+
+## 인스턴스 정보
+ami_id: ami-045f2d6eeb07ce8c0
+instance_type: t3.micro
+ec2_key: terraform-ec2-key # 별도로 콘솔에서 생성 후 사용
+ec2_role: terraform-ec2-role # 이미 존재하는 Role만 사용 가능
+
+## 볼륨 정보
 root_volume:
   size: 10
 additional_volumes:
   - device: /dev/xvdf
     size: 10
-security_groups:
-  - linux
