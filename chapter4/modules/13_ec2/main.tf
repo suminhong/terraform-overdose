@@ -19,33 +19,34 @@ locals {
     }
   )
 
+  # ec2_set 변수 재정의
+  ec2_set = {
+    for k, v in var.ec2_set : k => merge(v, {
+      instance_family = split(".", v.instance_type)[0]
+      full_name       = "${var.vpc_name}-${split("-", v.subnet)[0]}-${k}",
+    })
+  }
+
+  # EC2별 태그 선정의
+  ec2_tags = {
+    for k, v in local.ec2_set : k => merge(
+      local.module_tag,
+      {
+        Name    = v.full_name
+        EC2     = v.full_name
+        Env     = v.env
+        Team    = v.team
+        Service = v.service
+      }
+    )
+  }
+
   # AMI별 루트 볼륨 사이즈 계산
   ami_root_volume_size = {
     for k, v in data.aws_ami.this : k => [
       for device in v.block_device_mappings : device.ebs.volume_size
       if device.device_name == v.root_device_name
     ][0]
-  }
-
-  # ec2_set 변수 재정의
-  ec2_set = {
-    for k, v in var.ec2_set : k => merge(v, {
-      full_name = "${var.vpc_name}-${split("-", v.subnet)[0]}-${k}",
-      tags = {
-        Name    = "${var.vpc_name}-${split("-", v.subnet)[0]}-${k}"
-        EC2     = "${var.vpc_name}-${split("-", v.subnet)[0]}-${k}"
-        Env     = v.env
-        Team    = v.team
-        Service = v.service
-      }
-      instance_family = split(".", v.instance_type)[0]
-      ami_info = {
-        root_volume_size = local.ami_root_volume_size[k]
-        architecture     = data.aws_ami.this[k].architecture
-        name             = data.aws_ami.this[k].name
-        platform         = data.aws_ami.this[k].platform == "" ? "Linux" : data.aws_ami.this[k].platform
-      }
-    })
   }
 }
 
@@ -70,8 +71,7 @@ resource "aws_instance" "this" {
     delete_on_termination = true
 
     tags = merge(
-      local.module_tag,
-      each.value.tags,
+      local.ec2_tags[each.key],
       {
         Name = "${each.value.full_name}-root"
       }
@@ -79,29 +79,28 @@ resource "aws_instance" "this" {
   }
 
   tags = merge(
-    local.module_tag,
-    each.value.tags,
+    local.ec2_tags[each.key],
     {
-      Image_Arch     = each.value.ami_info.architecture
-      Image_Name     = each.value.ami_info.name
-      Image_Platform = each.value.ami_info.platform
+      Image_Arch     = data.aws_ami.this[each.key].architecture
+      Image_Name     = data.aws_ami.this[each.key].name
+      Image_Platform = data.aws_ami.this[each.key].platform == "" ? "Linux" : data.aws_ami.this[each.key].platform
     }
   )
 
   lifecycle {
-    precondition {
-      condition     = !(startswith(each.value.ami_info.architecture, "x86") && strcontains(each.value.instance_family, "g"))
+    precondition { # x86_64 이미지를 그래비톤 인스턴스로 설정할 수 없음.
+      condition     = !(startswith(data.aws_ami.this[each.key].architecture, "x86") && strcontains(each.value.instance_family, "g"))
       error_message = "[${local.vpc_name} VPC/${each.key} EC2] x86 아키텍처 이미지는 그래비톤 타입으로 실행할 수 없습니다. (현재 선택된 인스턴스 패밀리 : ${each.value.instance_family})"
     }
 
-    precondition {
-      condition     = !(startswith(each.value.ami_info.architecture, "arm") && !strcontains(each.value.instance_family, "g"))
+    precondition { # arm64 이미지는 그래비톤 인스턴스로만 설정할 수 있음.
+      condition     = !(startswith(data.aws_ami.this[each.key].architecture, "arm") && !strcontains(each.value.instance_family, "g"))
       error_message = "[${local.vpc_name} VPC/${each.key} EC2] arm 아키텍처 이미지는 그래비톤 타입으로만 실행할 수 있습니다. (현재 선택된 인스턴스 패밀리 : ${each.value.instance_family})"
     }
 
-    precondition {
-      condition     = each.value.root_volume.size >= each.value.ami_info.root_volume_size
-      error_message = "[${local.vpc_name} VPC/${each.key} EC2] 루트 볼륨 사이즈는 ${each.value.ami_info.root_volume_size} 이상이어야 합니다."
+    precondition { # 입력된 루트 볼륨 사이즈는 이미지에 지정된 루트 볼륨 사이즈 이상이어야 함.
+      condition     = each.value.root_volume.size >= local.ami_root_volume_size[each.key]
+      error_message = "[${local.vpc_name} VPC/${each.key} EC2] 루트 볼륨 사이즈는 ${local.ami_root_volume_size[each.key]} 이상이어야 합니다."
     }
   }
 }
@@ -121,10 +120,7 @@ resource "aws_eip" "this" {
   instance                  = aws_instance.this[each.key].id
   associate_with_private_ip = aws_instance.this[each.key].private_ip
 
-  tags = merge(
-    local.module_tag,
-    each.value.tags,
-  )
+  tags = local.ec2_tags[each.key]
 }
 
 ###################################################
@@ -156,8 +152,7 @@ resource "aws_ebs_volume" "this" {
   iops              = startswith(each.value.type, "io") ? each.value.iops : null
 
   tags = merge(
-    local.module_tag,
-    each.value.tags,
+    local.ec2_tags[each.value.ec2_name],
     {
       Name = "${each.value.full_name}-${each.value.device}"
     }
