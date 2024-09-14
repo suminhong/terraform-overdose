@@ -31,7 +31,7 @@ locals {
   nat = var.attribute.nat
 
   # nat.per_az == true인 경우, nat.subnet 서브넷의 가용 영역만큼 NAT 생성 / false인 경우 한개만 생성
-  nat_azs = slice(local.subnet_azs, 0, local.nat.per_az ? length(local.subnets[local.nat.subnet]) : 1)
+  nat_azs = slice(local.subnet_azs, 0, local.nat.per_az ? try(length(local.subnets[local.nat.subnet]), 0) : 1)
   nat_set = local.nat.create ? toset(local.nat_azs) : toset([])
 }
 
