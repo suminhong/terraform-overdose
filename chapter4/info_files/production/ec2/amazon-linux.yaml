@@ -20,6 +20,6 @@ ec2_role: terraform-ec2-role # (생략 가능) 이미 존재하는 Role만 사�
 root_volume:
   size: 10
 additional_volumes:
-  - device: /dev/xvdf
+  - device: /dev/sdf
     type: gp3
     size: 10

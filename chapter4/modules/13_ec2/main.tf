@@ -22,8 +22,11 @@ locals {
   # ec2_set 변수 재정의
   ec2_set = {
     for k, v in var.ec2_set : k => merge(v, {
-      instance_family = split(".", v.instance_type)[0]
       full_name       = "${var.vpc_name}-${split("-", v.subnet)[0]}-${k}",
+      image_arch      = data.aws_ami.this[k].architecture
+      image_name      = data.aws_ami.this[k].name
+      image_platform  = data.aws_ami.this[k].platform == "" ? "linux" : data.aws_ami.this[k].platform
+      instance_family = split(".", v.instance_type)[0]
     })
   }
 
@@ -81,9 +84,9 @@ resource "aws_instance" "this" {
   tags = merge(
     local.ec2_tags[each.key],
     {
-      Image_Arch     = data.aws_ami.this[each.key].architecture
-      Image_Name     = data.aws_ami.this[each.key].name
-      Image_Platform = data.aws_ami.this[each.key].platform == "" ? "Linux" : data.aws_ami.this[each.key].platform
+      Image_Arch     = each.value.image_arch
+      Image_Name     = each.value.image_name
+      Image_Platform = each.value.image_platform
     }
   )
 
@@ -130,15 +133,20 @@ locals {
   ec2_volume_set = [
     for ec2_name, ec2_attribute in local.ec2_set : {
       for volume in ec2_attribute.additional_volumes : "${ec2_name}_${volume.device}" => merge(
-        volume, {
-          ec2_name  = ec2_name,
-          full_name = ec2_attribute.full_name
-        },
+        { ec2_name = ec2_name }, volume, ec2_attribute
       )
     }
   ]
 
   merged_ec2_volume_set = module.merge_ec2_volume_set.output
+
+  available_ebs_type = ["standard", "gp2", "gp3", "io1", "io2", "sc1", "st1"]
+  valid_iops_type    = ["gp3", "io1", "io2"]
+
+  device_name_patterns = {
+    linux   = "/dev/sd[fp]" # Linux 권장 볼륨 디바이스 이름
+    windows = "xvd[fz]"     # Windows 권장 볼륨 디바이스 이름
+  }
 }
 
 module "merge_ec2_volume_set" {
@@ -152,7 +160,7 @@ resource "aws_ebs_volume" "this" {
   availability_zone = aws_instance.this[each.value.ec2_name].availability_zone
   size              = each.value.size
   type              = each.value.type
-  iops              = startswith(each.value.type, "io") ? each.value.iops : null
+  iops              = contains(local.valid_iops_type, each.value.type) ? each.value.iops : null
 
   tags = merge(
     local.ec2_tags[each.value.ec2_name],
@@ -160,12 +168,24 @@ resource "aws_ebs_volume" "this" {
       Name = "${each.value.full_name}-${each.value.device}"
     }
   )
+
+  lifecycle {
+    precondition { # 볼륨 디바이스 이름 유효성 검사
+      condition     = can(regex(local.device_name_patterns[each.value.image_platform], each.value.device))
+      error_message = "[${local.vpc_name} VPC/${each.value.ec2_name} EC2] ${each.value.device}: 유효하지 않은 디바이스 이름입니다. ${each.value.image_platform} OS에서 권장되는 디바이스 이름 패턴은 ${local.device_name_patterns[lower(each.value.image_platform)]} 입니다."
+    }
+
+    precondition { # 볼륨 타입 유효성 검사
+      condition     = contains(local.available_ebs_type, each.value.type)
+      error_message = "[${local.vpc_name} VPC/${each.value.ec2_name} EC2] ${each.value.device}: 유효하지 않은 볼륨 타입입니다. 사용 가능한 타입 : [${join(", ", local.available_ebs_type)}]"
+    }
+  }
 }
 
 ## EBS Volume - EC2 Instance Attach
 resource "aws_volume_attachment" "this" {
   for_each    = local.merged_ec2_volume_set
-  device_name = startswith(each.value.device, "s") ? "/dev/${each.value.device}" : each.value.device
+  device_name = each.value.device
   volume_id   = aws_ebs_volume.this[each.key].id
   instance_id = aws_instance.this[each.value.ec2_name].id
 }
