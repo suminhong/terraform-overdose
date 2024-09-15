@@ -5,16 +5,16 @@ output "ec2_id" {
   }
 }
 
-output "ec2_private_ip" {
-  description = "EC2 프라이빗 IP 맵"
+output "ec2_info" {
+  description = "EC2 정보 맵"
   value = {
-    for k, v in aws_instance.this : k => v.private_ip
-  }
-}
-
-output "ec2_public_ip" {
-  description = "EC2 퍼블릭 IP 맵"
-  value = {
-    for k, v in aws_eip.this : k => v.public_ip
+    for k, v in aws_instance.this : k => {
+      full_name         = local.ec2_set[k].full_name
+      instance_id       = v.id
+      private_ip        = v.private_ip
+      public_ip         = try(aws_eip.this[k].public_ip, "")
+      eni_id            = v.primary_network_interface_id
+      availability_zone = v.availability_zone
+    }
   }
 }

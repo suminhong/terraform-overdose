@@ -41,6 +41,5 @@ No requirements.
 | Name | Description |
 |------|-------------|
 | <a name="output_ec2_id"></a> [ec2\_id](#output\_ec2\_id) | EC2 ID 맵 |
-| <a name="output_ec2_private_ip"></a> [ec2\_private\_ip](#output\_ec2\_private\_ip) | EC2 프라이빗 IP 맵 |
-| <a name="output_ec2_public_ip"></a> [ec2\_public\_ip](#output\_ec2\_public\_ip) | EC2 퍼블릭 IP 맵 |
+| <a name="output_ec2_info"></a> [ec2\_info](#output\_ec2\_info) | EC2 정보 맵 |
 <!-- END_TF_DOCS -->
