@@ -129,8 +129,11 @@ resource "aws_eip" "this" {
 locals {
   ec2_volume_set = [
     for ec2_name, ec2_attribute in local.ec2_set : {
-      for volume_set in ec2_attribute.additional_volumes : "${ec2_name}_${volume_set.device}" => merge(
-        { ec2_name = ec2_name }, ec2_attribute, volume_set
+      for volume in ec2_attribute.additional_volumes : "${ec2_name}_${volume.device}" => merge(
+        volume, {
+          ec2_name  = ec2_name,
+          full_name = ec2_attribute.full_name
+        },
       )
     }
   ]
