@@ -21,4 +21,5 @@ root_volume:
   size: 10
 additional_volumes:
   - device: /dev/xvdf
+    type: gp3
     size: 10
