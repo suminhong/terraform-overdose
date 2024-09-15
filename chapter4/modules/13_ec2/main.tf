@@ -135,7 +135,7 @@ locals {
     }
   ]
 
-  ec2_volume_map = tomap(module.merge_ec2_volume_set.output)
+  merged_ec2_volume_set = module.merge_ec2_volume_set.output
 }
 
 module "merge_ec2_volume_set" {
@@ -145,7 +145,7 @@ module "merge_ec2_volume_set" {
 
 ## EBS Volume 생성
 resource "aws_ebs_volume" "this" {
-  for_each          = local.ec2_volume_map
+  for_each          = local.merged_ec2_volume_set
   availability_zone = aws_instance.this[each.value.ec2_name].availability_zone
   size              = each.value.size
   type              = each.value.type
@@ -161,7 +161,7 @@ resource "aws_ebs_volume" "this" {
 
 ## EBS Volume - EC2 Instance Attach
 resource "aws_volume_attachment" "this" {
-  for_each    = local.ec2_volume_map
+  for_each    = local.merged_ec2_volume_set
   device_name = startswith(each.value.device, "s") ? "/dev/${each.value.device}" : each.value.device
   volume_id   = aws_ebs_volume.this[each.key].id
   instance_id = aws_instance.this[each.value.ec2_name].id
