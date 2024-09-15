@@ -107,11 +107,6 @@ resource "aws_instance" "this" {
       error_message = "[${local.vpc_name} VPC/${each.key} EC2] arm 아키텍처 이미지는 그래비톤 타입으로만 실행할 수 있습니다. (현재 선택된 인스턴스 패밀리 : ${each.value.instance_family})"
     }
 
-    precondition { # 3. arm 아키텍처 이미지는 그래비톤 인스턴스로만 설정할 수 있음.
-      condition     = !(startswith(each.value.image_arch, "arm") && !strcontains(each.value.instance_family, "g"))
-      error_message = "[${local.vpc_name} VPC/${each.key} EC2] arm 아키텍처 이미지는 그래비톤 타입으로만 실행할 수 있습니다. (현재 선택된 인스턴스 패밀리 : ${each.value.instance_family})"
-    }
-
     precondition { # 4. 입력된 루트 볼륨 사이즈는 이미지에 지정된 루트 볼륨 사이즈 이상이어야 함.
       condition     = each.value.root_volume.size >= local.ami_root_volume_size[each.key]
       error_message = "[${local.vpc_name} VPC/${each.key} EC2] 루트 볼륨 사이즈는 ${local.ami_root_volume_size[each.key]} 이상이어야 합니다."
