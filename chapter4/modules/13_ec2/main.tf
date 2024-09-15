@@ -64,6 +64,7 @@ resource "aws_instance" "this" {
   key_name               = each.value.ec2_key
   vpc_security_group_ids = [for sg_name in each.value.security_groups : var.sg_id_map[sg_name]]
 
+  # optional - 입력 안할 시 null값이 들어감
   iam_instance_profile = each.value.ec2_role
   instance_type        = each.value.instance_type
   private_ip           = each.value.private_ip
@@ -91,19 +92,34 @@ resource "aws_instance" "this" {
   )
 
   lifecycle {
-    precondition { # x86_64 이미지를 그래비톤 인스턴스로 설정할 수 없음.
-      condition     = !(startswith(data.aws_ami.this[each.key].architecture, "x86") && strcontains(each.value.instance_family, "g"))
+    precondition { # 1. env 값이 develop, staging, rc, production 중 하나인가?
+      condition     = contains(["develop", "staging", "rc", "production"], each.value.env)
+      error_message = "[${local.vpc_name} VPC/${each.key} EC2] env 값은 반드시 [develop, staging, rc, production] 중 하나여야 합니다."
+    }
+
+    precondition { # 2. x86 아키텍처 이미지를 그래비톤 인스턴스로 설정할 수 없음.
+      condition     = !(startswith(each.value.image_arch, "x86") && strcontains(each.value.instance_family, "g"))
       error_message = "[${local.vpc_name} VPC/${each.key} EC2] x86 아키텍처 이미지는 그래비톤 타입으로 실행할 수 없습니다. (현재 선택된 인스턴스 패밀리 : ${each.value.instance_family})"
     }
 
-    precondition { # arm64 이미지는 그래비톤 인스턴스로만 설정할 수 있음.
-      condition     = !(startswith(data.aws_ami.this[each.key].architecture, "arm") && !strcontains(each.value.instance_family, "g"))
+    precondition { # 3. arm 아키텍처 이미지는 그래비톤 인스턴스로만 설정할 수 있음.
+      condition     = !(startswith(each.value.image_arch, "arm") && !strcontains(each.value.instance_family, "g"))
       error_message = "[${local.vpc_name} VPC/${each.key} EC2] arm 아키텍처 이미지는 그래비톤 타입으로만 실행할 수 있습니다. (현재 선택된 인스턴스 패밀리 : ${each.value.instance_family})"
     }
 
-    precondition { # 입력된 루트 볼륨 사이즈는 이미지에 지정된 루트 볼륨 사이즈 이상이어야 함.
+    precondition { # 3. arm 아키텍처 이미지는 그래비톤 인스턴스로만 설정할 수 있음.
+      condition     = !(startswith(each.value.image_arch, "arm") && !strcontains(each.value.instance_family, "g"))
+      error_message = "[${local.vpc_name} VPC/${each.key} EC2] arm 아키텍처 이미지는 그래비톤 타입으로만 실행할 수 있습니다. (현재 선택된 인스턴스 패밀리 : ${each.value.instance_family})"
+    }
+
+    precondition { # 4. 입력된 루트 볼륨 사이즈는 이미지에 지정된 루트 볼륨 사이즈 이상이어야 함.
       condition     = each.value.root_volume.size >= local.ami_root_volume_size[each.key]
       error_message = "[${local.vpc_name} VPC/${each.key} EC2] 루트 볼륨 사이즈는 ${local.ami_root_volume_size[each.key]} 이상이어야 합니다."
+    }
+
+    precondition { # 5. 루트 볼륨 타입 유효성 검사
+      condition     = contains(local.available_ebs_type, each.value.root_volume.type)
+      error_message = "[${local.vpc_name} VPC/${each.key} EC2] root볼륨: 유효하지 않은 볼륨 타입입니다. 사용 가능한 타입 : [${join(", ", local.available_ebs_type)}]"
     }
   }
 }
@@ -145,7 +161,7 @@ locals {
 
   device_name_patterns = {
     linux   = "/dev/sd[fp]" # Linux 권장 볼륨 디바이스 이름
-    windows = "xvd[fz]"     # Windows 권장 볼륨 디바이스 이름
+    windows = "xvd[fp]"     # Windows 권장 볼륨 디바이스 이름
   }
 }
 
@@ -170,14 +186,14 @@ resource "aws_ebs_volume" "this" {
   )
 
   lifecycle {
-    precondition { # 볼륨 디바이스 이름 유효성 검사
-      condition     = can(regex(local.device_name_patterns[each.value.image_platform], each.value.device))
-      error_message = "[${local.vpc_name} VPC/${each.value.ec2_name} EC2] ${each.value.device}: 유효하지 않은 디바이스 이름입니다. ${each.value.image_platform} OS에서 권장되는 디바이스 이름 패턴은 ${local.device_name_patterns[lower(each.value.image_platform)]} 입니다."
-    }
-
-    precondition { # 볼륨 타입 유효성 검사
+    precondition { # 5. 추가 볼륨 타입 유효성 검사
       condition     = contains(local.available_ebs_type, each.value.type)
       error_message = "[${local.vpc_name} VPC/${each.value.ec2_name} EC2] ${each.value.device}: 유효하지 않은 볼륨 타입입니다. 사용 가능한 타입 : [${join(", ", local.available_ebs_type)}]"
+    }
+
+    precondition { # 6. 볼륨 디바이스 이름 유효성 검사
+      condition     = can(regex(local.device_name_patterns[each.value.image_platform], each.value.device))
+      error_message = "[${local.vpc_name} VPC/${each.value.ec2_name} EC2] ${each.value.device}: 유효하지 않은 디바이스 이름입니다. ${each.value.image_platform} OS에서 권장되는 디바이스 이름 패턴은 ${local.device_name_patterns[lower(each.value.image_platform)]} 입니다."
     }
   }
 }
