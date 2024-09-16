@@ -31,26 +31,26 @@ data "aws_route_tables" "accepter" {
 
 # 로컬 변수 정의
 locals {
-  is_cross_account = module.check_cross.is_cross_account
-  is_cross_region  = module.check_cross.is_cross_region
+  # 서로 다른 프로바이더인지 체크
+  is_cross_provider = module.check_cross.is_cross_account || module.check_cross.is_cross_region
 
-  need_accepter = local.is_cross_account || local.is_cross_region
-
+  # 피어링 맺을 때 필요한 accepter 프로바이더 정보
   accepter_account_id = module.check_cross.b_account_id
   accepter_region     = module.check_cross.b_region
 
-  name = var.name
-
+  # 데이터블록으로 조회한 VPC 정보
   requester_vpc = data.aws_vpc.requester
   accepter_vpc  = data.aws_vpc.accepter
 
+  # 데이터블록으로 조회한 라우팅 테이블들 정보
   requester_rtbs = data.aws_route_tables.requester.ids
   accepter_rtbs  = data.aws_route_tables.accepter.ids
 
+  # 모듈 내 공통 태그
   module_tag = merge(
     var.tags,
     {
-      Name          = local.name,
+      Name          = var.name,
       tf_module     = "14_vpc_peering",
       Requester_VPC = lookup(local.requester_vpc.tags, "Name", "네임태그없음")
       Accepter_VPC  = lookup(local.accepter_vpc.tags, "Name", "네임태그없음")

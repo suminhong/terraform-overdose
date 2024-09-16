@@ -4,32 +4,19 @@
 resource "aws_vpc_peering_connection" "this" {
   provider = aws.requester
 
-  peer_owner_id = local.is_cross_account ? local.accepter_account_id : null
-  peer_region   = local.is_cross_region ? local.accepter_region : null
+  vpc_id = local.requester_vpc.id
 
-  peer_vpc_id = local.accepter_vpc.id
-  vpc_id      = local.requester_vpc.id
+  peer_vpc_id   = local.accepter_vpc.id
+  peer_owner_id = local.accepter_account_id
+  peer_region   = local.accepter_region
 
-  auto_accept = local.need_accepter ? false : true
-
-  dynamic "requester" {
-    for_each = local.need_accepter ? toset([]) : toset(["1"])
-    content {
-      allow_remote_vpc_dns_resolution = true
-    }
-  }
-
-  dynamic "accepter" {
-    for_each = local.need_accepter ? toset([]) : toset(["1"])
-    content {
-      allow_remote_vpc_dns_resolution = true
-    }
-  }
+  # accepter 리소스를 별도로 생성할 것이기 때문에 false여도 상관 없음
+  auto_accept = false
 
   tags = merge(
     local.module_tag,
     {
-      Side = "Requester"
+      Side = local.is_cross_provider ? "Requester" : "Requester & Accepter"
     }
   )
 }
@@ -39,30 +26,32 @@ locals {
 }
 
 ###################################################
-# VPC Peering Accepter (서로 다른 프로바이더인 경우)
+# VPC Peering Accepter
 ###################################################
 resource "aws_vpc_peering_connection_accepter" "this" {
-  count                     = local.need_accepter ? 1 : 0
   provider                  = aws.accepter
   vpc_peering_connection_id = local.peering_id
-  auto_accept               = true
+  auto_accept               = true # 여기에서 auto_accept 설정
 
   tags = merge(
     local.module_tag,
     {
-      Side = "Accepter"
+      Side = local.is_cross_provider ? "Accepter" : "Requester & Accepter"
     }
   )
 }
 
+locals {
+  peering_accepter_id = aws_vpc_peering_connection_accepter.this.id
+}
+
 ###################################################
-# VPC Peering Option (서로 다른 프로바이더인 경우)
+# VPC Peering Option
 ###################################################
 resource "aws_vpc_peering_connection_options" "requester" {
-  count    = local.need_accepter ? 1 : 0
   provider = aws.requester
 
-  vpc_peering_connection_id = aws_vpc_peering_connection_accepter.this[count.index].id
+  vpc_peering_connection_id = local.peering_accepter_id
 
   requester {
     allow_remote_vpc_dns_resolution = true
@@ -70,10 +59,9 @@ resource "aws_vpc_peering_connection_options" "requester" {
 }
 
 resource "aws_vpc_peering_connection_options" "accepter" {
-  count    = local.need_accepter ? 1 : 0
   provider = aws.accepter
 
-  vpc_peering_connection_id = aws_vpc_peering_connection_accepter.this[count.index].id
+  vpc_peering_connection_id = local.peering_accepter_id
 
   accepter {
     allow_remote_vpc_dns_resolution = true
@@ -81,7 +69,7 @@ resource "aws_vpc_peering_connection_options" "accepter" {
 }
 
 ###################################################
-# 라우팅 테이블에 라우트 추가
+# 각 VPC 내 모든 라우팅 테이블에 라우트 추가
 ###################################################
 resource "aws_route" "requester_to_accepter" {
   for_each = toset(local.requester_rtbs)

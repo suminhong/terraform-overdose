@@ -1,23 +1,23 @@
 prod_peering:
   requester:
-    provider: seoul
+    tf_env: seoul
     vpc: seoul-prod
   accepter:
-    provider: virginia
+    tf_env: virginia
     vpc: virginia-prod
 
 dev_peering:
   requester:
-    provider: seoul
+    tf_env: seoul
     vpc: seoul-dev
   accepter:
-    provider: virginia
+    tf_env: virginia
     vpc: virginia-dev
 
 seoul_peering:
   requester:
-    provider: seoul
+    tf_env: seoul
     vpc: seoul-prod
   accepter:
-    provider: seoul
+    tf_env: seoul
     vpc: seoul-dev
