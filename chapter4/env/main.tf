@@ -65,24 +65,3 @@ module "ec2" {
 
   tags = local.env_tags
 }
-
-###################################################
-# Create VPC Peering
-###################################################
-module "vpc_peering" {
-  source = "../modules/14_vpc_peering"
-  providers = {
-    aws.requester = aws
-    aws.accepter  = aws
-  }
-
-  requester_vpc = {
-    vpc_id   = module.vpc["production"].vpc_id
-    vpc_name = module.vpc["production"].vpc_name
-  }
-
-  accepter_vpc = {
-    vpc_id   = module.vpc["develop"].vpc_id
-    vpc_name = module.vpc["develop"].vpc_name
-  }
-}
