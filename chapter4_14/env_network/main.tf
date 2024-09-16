@@ -1,7 +1,6 @@
 locals {
   topology = yamldecode(file("./topology.yaml"))
 
-  tfstate_s3 = "terraform-book-tfstate"
   # 테라폼 상태 파일 이름의 리스트
   tf_vpc_env_list = distinct(flatten([
     for k, v in local.topology : [v.requester.tf_env, v.accepter.tf_env]
@@ -21,7 +20,7 @@ data "terraform_remote_state" "vpc" {
   for_each = toset(local.tf_vpc_env_list)
   backend  = "s3"
   config = {
-    bucket  = local.tfstate_s3
+    bucket  = "terraform-book-tfstate"
     key     = "${each.key}.tfstate"
     region  = "ap-northeast-2"
     profile = "terraform"
