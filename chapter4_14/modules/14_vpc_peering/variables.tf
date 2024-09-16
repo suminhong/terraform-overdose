@@ -3,12 +3,14 @@ variable "name" {
   type        = string
 }
 
-variable "vpc_ids" {
-  description = "피어링을 맺을 VPC들의 ID"
-  type = object({
-    requester = string
-    accepter  = string
-  })
+variable "requester_vpc_id" {
+  description = "요청자 VPC의 ID"
+  type        = string
+}
+
+variable "accepter_vpc_id" {
+  description = "수락자 VPC의 ID"
+  type        = string
 }
 
 variable "tags" {

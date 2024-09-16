@@ -10,23 +10,23 @@ module "check_cross" {
 # VPC 정보 불러오기
 data "aws_vpc" "requester" {
   provider = aws.requester
-  id       = var.vpc_ids.requester
+  id       = var.requester_vpc_id
 }
 
 data "aws_vpc" "accepter" {
   provider = aws.accepter
-  id       = var.vpc_ids.accepter
+  id       = var.accepter_vpc_id
 }
 
 # 라우팅 테이블 정보 불러오기
 data "aws_route_tables" "requester" {
   provider = aws.requester
-  vpc_id   = var.vpc_ids.requester
+  vpc_id   = var.requester_vpc_id
 }
 
 data "aws_route_tables" "accepter" {
   provider = aws.accepter
-  vpc_id   = var.vpc_ids.accepter
+  vpc_id   = var.accepter_vpc_id
 }
 
 # 로컬 변수 정의

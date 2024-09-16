@@ -35,9 +35,10 @@ No requirements.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_accepter_vpc_id"></a> [accepter\_vpc\_id](#input\_accepter\_vpc\_id) | 수락자 VPC의 ID | `string` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | VPC 피어링의 이름 | `string` | n/a | yes |
+| <a name="input_requester_vpc_id"></a> [requester\_vpc\_id](#input\_requester\_vpc\_id) | 요청자 VPC의 ID | `string` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | 모든 리소스에 적용될 태그 (map) | `map(string)` | `{}` | no |
-| <a name="input_vpc_ids"></a> [vpc\_ids](#input\_vpc\_ids) | 피어링을 맺을 VPC들의 ID | <pre>object({<br>    requester = string<br>    accepter  = string<br>  })</pre> | n/a | yes |
 
 ## Outputs
 

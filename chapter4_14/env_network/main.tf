@@ -29,46 +29,40 @@ data "terraform_remote_state" "vpc" {
 
 # Requester가 Seoul 프로바이더고 Accepter가 Virginia 프로바이더인 경우
 module "seoul_to_virginia_peering" {
+  ## 메타인자들
   source = "../modules/14_vpc_peering"
   for_each = {
     for k, v in local.topology : k => v
     if v.requester.tf_env == "seoul" && v.accepter.tf_env == "virginia"
   }
-
   providers = {
     aws.requester = aws.seoul
     aws.accepter  = aws.virginia
   }
 
-  name = each.key
-
-  vpc_ids = {
-    requester = local.vpc_ids[each.value.requester.tf_env][each.value.requester.vpc]
-    accepter  = local.vpc_ids[each.value.accepter.tf_env][each.value.accepter.vpc]
-  }
-
-  tags = local.env_tags
+  ## 실제 인풋들
+  name             = each.key
+  requester_vpc_id = local.vpc_ids[each.value.requester.tf_env][each.value.requester.vpc]
+  accepter_vpc_id  = local.vpc_ids[each.value.accepter.tf_env][each.value.accepter.vpc]
+  tags             = local.env_tags
 }
 
 # Requester가 Seoul 프로바이더고 Accepter가 Seoul 프로바이더인 경우
 module "seoul_to_seoul_peering" {
+  ## 메타인자들
   source = "../modules/14_vpc_peering"
   for_each = {
     for k, v in local.topology : k => v
     if v.requester.tf_env == "seoul" && v.accepter.tf_env == "seoul"
   }
-
   providers = {
     aws.requester = aws.seoul
     aws.accepter  = aws.seoul
   }
 
-  name = each.key
-
-  vpc_ids = {
-    requester = local.vpc_ids[each.value.requester.tf_env][each.value.requester.vpc]
-    accepter  = local.vpc_ids[each.value.accepter.tf_env][each.value.accepter.vpc]
-  }
-
-  tags = local.env_tags
+  ## 실제 인풋들
+  name             = each.key
+  requester_vpc_id = local.vpc_ids[each.value.requester.tf_env][each.value.requester.vpc]
+  accepter_vpc_id  = local.vpc_ids[each.value.accepter.tf_env][each.value.accepter.vpc]
+  tags             = local.env_tags
 }
