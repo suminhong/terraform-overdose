@@ -1,13 +1,13 @@
 provider "aws" {
   region  = "ap-northeast-2"
-  profile = "honglab"
+  profile = "terraform"
 
   alias = "seoul"
 }
 
 provider "aws" {
   region  = "us-east-1"
-  profile = "honglab"
+  profile = "terraform"
 
   alias = "virginia"
 }

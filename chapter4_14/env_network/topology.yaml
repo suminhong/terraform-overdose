@@ -13,3 +13,11 @@ dev_peering:
   accepter:
     provider: virginia
     vpc: virginia-dev
+
+seoul_peering:
+  requester:
+    provider: seoul
+    vpc: seoul-prod
+  accepter:
+    provider: seoul
+    vpc: seoul-dev

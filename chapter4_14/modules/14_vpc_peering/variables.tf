@@ -1,18 +1,13 @@
-variable "requester_vpc" {
-  description = "요청할 VPC 정보"
-  type = object({
-    vpc_id               = string
-    vpc_name             = string
-    allow_dns_resolution = optional(bool, true)
-  })
+variable "name" {
+  description = "VPC 피어링의 이름"
+  type        = string
 }
 
-variable "accepter_vpc" {
-  description = "수락할 VPC 정보"
+variable "vpc_ids" {
+  description = "피어링을 맺을 VPC들의 ID"
   type = object({
-    vpc_id               = string
-    vpc_name             = string
-    allow_dns_resolution = optional(bool, true)
+    requester = string
+    accepter  = string
   })
 }
 
