@@ -1,0 +1,15 @@
+prod_peering:
+  requester:
+    provider: seoul
+    vpc: seoul-prod
+  accepter:
+    provider: virginia
+    vpc: virginia-prod
+
+dev_peering:
+  requester:
+    provider: seoul
+    vpc: seoul-dev
+  accepter:
+    provider: virginia
+    vpc: virginia-dev
