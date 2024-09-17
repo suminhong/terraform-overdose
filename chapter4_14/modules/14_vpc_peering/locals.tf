@@ -54,8 +54,8 @@ locals {
   module_tag = merge(
     var.tags,
     {
-      Name          = var.name,
-      tf_module     = "14_vpc_peering",
+      Name          = var.name
+      tf_module     = "14_vpc_peering"
       Requester_VPC = lookup(local.requester_vpc.tags, "Name", "네임태그없음")
       Accepter_VPC  = lookup(local.accepter_vpc.tags, "Name", "네임태그없음")
     }
