@@ -59,16 +59,18 @@ locals {
 resource "aws_instance" "this" {
   for_each = local.ec2_set
 
-  subnet_id              = var.subnet_id_map[each.value.subnet][each.value.az]
+  # required - 반드시 들어가야 하는 값들
   ami                    = each.value.ami_id
-  key_name               = each.value.ec2_key
+  instance_type          = each.value.instance_type
+  subnet_id              = var.subnet_id_map[each.value.subnet][each.value.az]
   vpc_security_group_ids = [for sg_name in each.value.security_groups : var.sg_id_map[sg_name]]
 
   # optional - 입력 안할 시 null값이 들어감
   iam_instance_profile = each.value.ec2_role
-  instance_type        = each.value.instance_type
+  key_name             = each.value.ec2_key
   private_ip           = each.value.private_ip
 
+  # 루트 볼륨 설정
   root_block_device {
     volume_type           = each.value.root_volume.type
     volume_size           = each.value.root_volume.size

@@ -25,19 +25,20 @@ variable "ec2_set" {
     env             = string
     team            = string
     service         = string
+    ami_id          = string
+    instance_type   = string
     subnet          = string
     az              = string
     security_groups = list(string)
-    ami_id          = string
-    instance_type   = string
-    root_volume = object({
-      size = number
-      type = optional(string, "gp3")
-    })
     # optional
     ec2_key    = optional(string)
     ec2_role   = optional(string)
     private_ip = optional(string)
+    # volumes
+    root_volume = object({
+      size = number
+      type = optional(string, "gp3")
+    })
     additional_volumes = optional(set(object({
       device = string
       size   = number
