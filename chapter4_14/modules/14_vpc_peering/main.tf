@@ -21,16 +21,12 @@ resource "aws_vpc_peering_connection" "this" {
   )
 }
 
-locals {
-  peering_id = aws_vpc_peering_connection.this.id
-}
-
 ###################################################
 # VPC Peering Accepter
 ###################################################
 resource "aws_vpc_peering_connection_accepter" "this" {
   provider                  = aws.accepter
-  vpc_peering_connection_id = local.peering_id
+  vpc_peering_connection_id = aws_vpc_peering_connection.this.id
   auto_accept               = true # 여기에서 auto_accept 설정
 
   tags = merge(
@@ -42,7 +38,9 @@ resource "aws_vpc_peering_connection_accepter" "this" {
 }
 
 locals {
-  peering_accepter_id = aws_vpc_peering_connection_accepter.this.id
+  # aws_vpc_peering_connection.this.id = aws_vpc_peering_connection_accepter.this.id
+  # 수락이 완료된 후에 다른 리소스들을 생성하기 위해 accepter의 id를 사용
+  peering_id = aws_vpc_peering_connection_accepter.this.id
 }
 
 ###################################################
@@ -51,7 +49,7 @@ locals {
 resource "aws_vpc_peering_connection_options" "requester" {
   provider = aws.requester
 
-  vpc_peering_connection_id = local.peering_accepter_id
+  vpc_peering_connection_id = local.peering_id
 
   requester {
     allow_remote_vpc_dns_resolution = true
@@ -61,7 +59,7 @@ resource "aws_vpc_peering_connection_options" "requester" {
 resource "aws_vpc_peering_connection_options" "accepter" {
   provider = aws.accepter
 
-  vpc_peering_connection_id = local.peering_accepter_id
+  vpc_peering_connection_id = local.peering_id
 
   accepter {
     allow_remote_vpc_dns_resolution = true

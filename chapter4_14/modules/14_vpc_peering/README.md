@@ -42,5 +42,7 @@ No requirements.
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_peering_id"></a> [peering\_id](#output\_peering\_id) | VPC 피어링 연결 id |
 <!-- END_TF_DOCS -->
