@@ -1,9 +1,8 @@
-# 입력받은 두 프로바이더가 동일한지 체크
-module "check_cross" {
-  source = "../utility/9_2_check_aws_cross_provider"
+# 수락자 계정의 정보 불러오기
+module "accepter" {
+  source = "../utility/9_1_get_aws_metadata"
   providers = {
-    aws.a = aws.requester
-    aws.b = aws.accepter
+    aws = aws.accepter
   }
 }
 
@@ -31,12 +30,9 @@ data "aws_route_tables" "accepter" {
 
 # 로컬 변수 정의
 locals {
-  # 서로 다른 프로바이더인지 체크
-  is_cross_provider = module.check_cross.is_cross_account || module.check_cross.is_cross_region
-
   # 피어링 맺을 때 필요한 accepter 프로바이더 정보
-  accepter_account_id = module.check_cross.b_account_id
-  accepter_region     = module.check_cross.b_region
+  accepter_account_id = module.accepter.account_id
+  accepter_region     = module.accepter.region_name
 
   # 데이터블록으로 조회한 VPC 정보
   requester_vpc = data.aws_vpc.requester

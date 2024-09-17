@@ -13,12 +13,7 @@ resource "aws_vpc_peering_connection" "this" {
   # accepter 리소스를 별도로 생성할 것이기 때문에 false여도 상관 없음
   auto_accept = false
 
-  tags = merge(
-    local.module_tag,
-    {
-      Side = local.is_cross_provider ? "Requester" : "Requester & Accepter"
-    }
-  )
+  tags = local.module_tag
 }
 
 ###################################################
@@ -29,12 +24,7 @@ resource "aws_vpc_peering_connection_accepter" "this" {
   vpc_peering_connection_id = aws_vpc_peering_connection.this.id
   auto_accept               = true # 여기에서 auto_accept 설정
 
-  tags = merge(
-    local.module_tag,
-    {
-      Side = local.is_cross_provider ? "Accepter" : "Requester & Accepter"
-    }
-  )
+  tags = local.module_tag
 }
 
 locals {

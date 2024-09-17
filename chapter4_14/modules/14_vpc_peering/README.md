@@ -14,7 +14,7 @@ No requirements.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_check_cross"></a> [check\_cross](#module\_check\_cross) | ../utility/9_2_check_aws_cross_provider | n/a |
+| <a name="module_accepter"></a> [accepter](#module\_accepter) | ../utility/9_1_get_aws_metadata | n/a |
 
 ## Resources
 
