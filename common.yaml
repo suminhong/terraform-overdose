@@ -1,0 +1,7 @@
+allow_env:
+- develop
+- staging
+- rc
+- production
+
+tf_desc: Managed By Terraform
