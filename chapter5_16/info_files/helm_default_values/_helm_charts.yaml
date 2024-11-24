@@ -1,0 +1,12 @@
+karpenter:
+  repository: oci://public.ecr.aws/karpenter/
+  version: 1.0.7
+  namespace: kube-system
+metrics-server:
+  repository: https://kubernetes-sigs.github.io/metrics-server/
+  version: 3.12.2
+  namespace: kube-system
+external-dns:
+  repository: https://kubernetes-sigs.github.io/external-dns/
+  version: 1.15.0
+  namespace: kube-system

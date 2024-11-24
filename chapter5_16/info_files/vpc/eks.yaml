@@ -1,0 +1,20 @@
+# vpc 1개에 대한 구성 파일.
+
+cidr: 10.0.0.0/16
+
+env: production
+team: devops
+
+subnet_newbits: 8
+subnet_azs: [a, c, b, d] # 순서대로 적용
+subnets:
+  pub-nat: [0, 1] # a, c
+  pub-eks: [2, 3]
+  pri-eks: [4, 5]
+
+nat:
+  create: true
+  subnet: pub-nat
+  per_az: true # nat.subnet의 가용영역별로 생성
+
+# 추가로 고려할만한 구성 : rtb_override

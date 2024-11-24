@@ -1,0 +1,108 @@
+env: production
+
+cluster_info:
+  name: cluster1
+  version: 1.31
+  log_types: [audit, api, authenticator]
+  access_type: API
+  upgrade_policy: EXTENDED
+  arc_zonal_shift: true
+
+network_info:
+  vpc_name: eks
+  subnet_name_list: [pub-eks]
+  allow_public_access: true
+  allow_private_access: true
+  public_access_cidrs: ["0.0.0.0/0"]
+  private_access_cidrs: [self-vpc]
+
+fargate_profile:
+  subnet_name_list: ["pri-eks"] # public subnet 사용 불가
+  profiles:
+  - name: karpenter
+    namespace: kube-system
+    labels:
+      app.kubernetes.io/name: karpenter
+  - name: coredns
+    namespace: kube-system
+    labels:
+      k8s-app: kube-dns
+
+eks_addon:
+  vpc-cni:
+    enable: true
+    version: v1.19.0-eksbuild.1
+    configuration: |-
+      env:
+        WARM_IP_TARGET: "2"
+        MINIMUM_IP_TARGET: "10"
+  coredns:
+    enable: true
+    version: v1.11.3-eksbuild.1
+    configuration: |-
+      computeType: Fargate
+  kube-proxy:
+    enable: true
+    version: v1.31.2-eksbuild.3
+
+helm_release:
+  metrics-server:
+    enable: true
+  external-dns:
+    enable: true
+    overwrite_values:
+      policy: sync
+      serviceAccount.create: true
+
+karpenter:
+  stateless-01:
+    subnet_name_list: [pri-eks]
+    volume_size_list: [50]
+    node_spec:
+      expireAfter: 720h
+      imgae_alias: [al2@latest]
+      image_arch: [amd64]
+      image_os: [linux]
+      instance_capacity: [spot]
+      instance_family: [t3]
+      instance_size: [small, medium]
+    disruption:
+      consolidationPolicy: WhenEmptyOrUnderutilized
+      consolidateAfter: 10m
+      budgets:
+      # Empty or Drifted 상태의 노드는 전체의 20%까지 죽여도 됨
+      - nodes: "20%"
+        reasons: [Empty, Drifted]
+      # 동시에 최대 3대까지 죽을 수 있음
+      - nodes: "3"
+      # 매일 00:00~00:30 동안은 노드가 죽지 않음
+      - nodes: "0"
+        schedule: "@daily"
+        duration: 30m
+    k8s_labels:
+      node-label.terraform-book/type: stateless
+      node-label.terraform-book/karpenter: stateless-01
+      node-label.terraform-book/compute: cpu
+  
+  stateful-01:
+    subnet_name_list: [pri-eks]
+    volume_size_list: [100, 100]
+    node_spec:
+      expireAfter: Never
+      imgae_alias: [al2@latest]
+      image_arch: [amd64]
+      image_os: [linux]
+      instance_capacity: [on-demand, spot]
+      instance_family: [t3]
+      instance_size: [small, medium]
+    disruption:
+      consolidationPolicy: WhenEmpty
+      consolidateAfter: Never
+      budgets:
+      - nodes: "0"
+    taints:
+      node-taint.terraform-book/stateful: true
+    k8s_labels:
+      node-label.terraform-book/type: stateful
+      node-label.terraform-book/karpenter: stateful-01
+      node-label.terraform-book/compute: cpu

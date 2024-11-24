@@ -1,0 +1,7 @@
+helm_release:
+  metrics-server:
+    enable: true
+  external-dns:
+    enable: true
+    overwrite_values:
+      policy: upsert-only # 기본값과 다른 경우 작성

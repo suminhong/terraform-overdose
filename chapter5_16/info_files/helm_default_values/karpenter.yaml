@@ -1,0 +1,28 @@
+serviceAccount:
+  create: true
+  annotations:
+    "eks.amazonaws.com/role-arn": ${irsa_arn}
+
+replicas: 2
+
+dnsPolicy: Default
+
+nodeSelector:
+  kubernetes.io/os: linux
+
+controller:
+  resources:
+   requests:
+     cpu: 1
+     memory: 2Gi
+   limits:
+     cpu: 1
+     memory: 2Gi
+
+settings:
+  clusterName: ${cluster_id}
+  clusterEndpoint: ${cluster_endpoint}
+  InterruptionQueue: ${InterruptionQueue}
+  featureGates:
+    drift: false
+    spotToSpotConsolidation: ${featureGates_stsc}

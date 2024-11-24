@@ -1,0 +1,5 @@
+policy: upsert-only
+serviceAccount:
+  create: true
+  annotations:
+    "eks.amazonaws.com/role-arn": ${irsa_arn}
