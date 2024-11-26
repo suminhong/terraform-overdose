@@ -1,0 +1,20 @@
+# AWS IAM 롤 - 키클락 그룹 간 매핑 정보
+aws_roles:
+- name: readonly
+  policies:
+  - ReadOnlyAccess
+- name: admin
+  policies:
+  - AdministratorAccess
+
+keycloak_groups:
+- name: DEFAULT
+  is_default: true
+  aws_roles: []
+- name: DEVELOPER
+  aws_roles:
+  - readonly
+- name: DEVOPS
+  aws_roles:
+  - readonly
+  - admin
