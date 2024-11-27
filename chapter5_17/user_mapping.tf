@@ -101,22 +101,7 @@ resource "keycloak_default_groups" "this" {
 }
 
 ###################################################
-# 유저가 스스로 본인 계정 정보를 확인하고 비밀번호를 변경할 수 있는 키클락 내장 롤 검색
-# -> account 클라이언트의 manage-account 롤의 id를 알아내야 한다
-###################################################
-data "keycloak_openid_client" "account" {
-  realm_id  = local.keycloak_realm_id
-  client_id = "account"
-}
-
-data "keycloak_role" "manage_account" {
-  realm_id  = local.keycloak_realm_id
-  client_id = data.keycloak_openid_client.account.id
-  name      = "manage-account"
-}
-
-###################################################
-# 그룹-롤 매핑
+# 키클락 롤 구성
 ###################################################
 # AWS IAM 롤과 1대1 관계인 키클락 롤 생성
 # 롤의 이름은 "{AWS 키클락 SAML 프로바이더 ARN},{AWS IAM 롤 ARN}" 형식이어야 한다
@@ -133,6 +118,22 @@ resource "keycloak_role" "this" {
       Name = aws_iam_role.this[each.key].name
     }
   )
+}
+
+###################################################
+# 그룹-롤 매핑
+###################################################
+# 유저가 스스로 본인 계정 정보를 확인하고 비밀번호를 변경할 수 있는 키클락 내장 롤 검색
+# -> account 클라이언트의 manage-account 롤의 id를 알아내야 한다
+data "keycloak_openid_client" "account" {
+  realm_id  = local.keycloak_realm_id
+  client_id = "account"
+}
+
+data "keycloak_role" "manage_account" {
+  realm_id  = local.keycloak_realm_id
+  client_id = data.keycloak_openid_client.account.id
+  name      = "manage-account"
 }
 
 # 키클락 그룹별 각자 사용해야 할 롤들 + manage-account 롤을 연결
