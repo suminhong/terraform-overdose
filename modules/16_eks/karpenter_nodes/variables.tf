@@ -5,31 +5,7 @@ variable "name" {
 
 variable "attribute" {
   description = "카펜터 노드 정보"
-  # type = object({
-  #   subnet_name_list = list(string)
-  #   volume_size_list = list(number)
-  #   node_spec = object({
-  #     expireAfter       = string
-  #     imgae_alias       = list(string)
-  #     image_arch        = list(string)
-  #     image_os          = list(string)
-  #     instance_capacity = list(string)
-  #     instance_family   = list(string)
-  #     instance_size     = list(string)
-  #   })
-  #   disruption = object({
-  #     consolidationPolicy = string
-  #     consolidateAfter    = string
-  #     budgets = optional(list(object({
-  #       nodes    = optional(string)
-  #       schedule = optional(string)
-  #       duration = optional(string)
-  #       reasons  = optional(list(string))
-  #     })), [])
-  #   })
-  #   taints     = optional(map(string), {})
-  #   k8s_labels = optional(map(string), {})
-  # })
+  # type : 상위 모듈(16_eks)의 variable에서 검증했으므로 생략
 }
 
 variable "subnet_ids" {
