@@ -24,7 +24,5 @@ No inputs.
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_cluster1_provider"></a> [cluster1\_provider](#output\_cluster1\_provider) | n/a |
+No outputs.
 <!-- END_TF_DOCS -->

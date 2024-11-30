@@ -104,7 +104,12 @@ module "karpenter_release" {
 
   tags = local.module_tags
 
-  depends_on = [aws_eks_fargate_profile.this]
+  depends_on = [
+    # karpenter가 fargate로 떠야함
+    aws_eks_fargate_profile.this,
+    # 클러스터를 생성하는 주체 계정이 권한을 획득해야 함
+    aws_eks_access_policy_association.standard,
+  ]
 }
 
 ###################################################
@@ -142,5 +147,8 @@ module "karpenter_nodes" {
   k8s_labels = local.k8s_labels
   tags       = local.module_tags
 
-  depends_on = [module.karpenter_release]
+  depends_on = [
+    # karpenter가 설치된 이후에 생성되어야 함
+    module.karpenter_release,
+  ]
 }

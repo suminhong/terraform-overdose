@@ -7,6 +7,7 @@ terraform {
   }
 }
 
+# [코드 16-1] 쿠버네티스 프로바이더 선언
 data "aws_eks_cluster_auth" "this" {
   name = local.cluster_id
 }
@@ -23,17 +24,18 @@ provider "kubernetes" {
   cluster_ca_certificate = local.cluster_ca_certificate
 }
 
-provider "kubectl" {
-  host                   = local.cluster_endpoint
-  token                  = local.cluster_token
-  cluster_ca_certificate = local.cluster_ca_certificate
-  load_config_file       = false
-}
-
+# [코드 16-14] 헬름 프로바이더 선언
 provider "helm" {
   kubernetes {
     host                   = local.cluster_endpoint
     token                  = local.cluster_token
     cluster_ca_certificate = local.cluster_ca_certificate
   }
+}
+
+provider "kubectl" {
+  host                   = local.cluster_endpoint
+  token                  = local.cluster_token
+  cluster_ca_certificate = local.cluster_ca_certificate
+  load_config_file       = false
 }

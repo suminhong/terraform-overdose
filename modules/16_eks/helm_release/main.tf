@@ -47,9 +47,6 @@ locals {
 
   helm_default_values   = templatefile("${local.helm_default_values_path}/${var.name}.yaml", local.helm_template_values)
   helm_overwrite_values = var.attribute.overwrite_values
-
-  # overwrite_values      = var.attribute.overwrite_values
-  # helm_overwrite_values = local.overwrite_values == "" ? {} : yamldecode(local.overwrite_values)
 }
 
 resource "helm_release" "this" {

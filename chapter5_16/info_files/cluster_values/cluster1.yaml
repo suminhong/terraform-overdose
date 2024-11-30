@@ -4,7 +4,7 @@ cluster_info:
   name: cluster1
   version: 1.31
   log_types: [audit, api, authenticator]
-  access_type: API
+  auth_mode: API
   upgrade_policy: EXTENDED
   arc_zonal_shift: true
 
@@ -16,8 +16,38 @@ network_info:
   public_access_cidrs: ["0.0.0.0/0"]
   private_access_cidrs: [self-vpc]
 
+# [코드 16-6] aws-auth configMap을 덮어쓰기 위한 데이터 입력값
+# aws_auth:
+#   mapRoles:
+#   - rolearn: arn:aws:iam::000000000000:role/Admin
+#     username: admin
+#     groups: [system:masters]
+#   mapUsers:
+#   - userarn: arn:aws:iam::000000000000:user/Honglab
+#     username: honglab
+#     groups: [system:masters]
+#   mapAccounts:
+#   - 012345678901
+#   - 456789012345
+
+access_entries:
+- principal_arn: arn:aws:iam::706871976301:role/keycloak-role-admin
+  access_policies:
+  - policy: AmazonEKSClusterAdminPolicy
+    type: cluster
+  - policy: AmazonEKSAdminViewPolicy
+    type: namespace
+    namespaces: [kube-system]
+- principal_arn: arn:aws:iam::706871976301:user/cloudest
+  k8s_groups: [custom_group1, custom_group2]
+  k8s_username: honglab
+  access_policies:
+  - policy: AmazonEKSAdminViewPolicy
+    type: cluster
+    namespaces: [kube-system] # cluster type이라 실제로는 적용되지 않음
+
 fargate_profile:
-  subnet_name_list: ["pri-eks"] # public subnet 사용 불가
+  subnet_name_list: [pri-eks] # public subnet 사용 불가
   profiles:
   - name: karpenter
     namespace: kube-system
@@ -45,11 +75,13 @@ eks_addon:
     enable: true
     version: v1.31.2-eksbuild.3
 
+# [코드 16-18]
 helm_release:
   metrics-server:
     enable: true
   external-dns:
     enable: true
+    # 기본값과 다른 경우 작성
     overwrite_values:
       policy: sync
       serviceAccount.create: true

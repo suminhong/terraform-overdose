@@ -15,7 +15,7 @@ variable "attribute" {
       name            = string
       version         = string
       log_types       = list(string)
-      access_type     = optional(string, "API_AND_CONFIG_MAP")
+      auth_mode       = optional(string, "API_AND_CONFIG_MAP")
       upgrade_policy  = optional(string, "EXTENDED")
       arc_zonal_shift = optional(bool, false)
     })
@@ -27,6 +27,16 @@ variable "attribute" {
       public_access_cidrs  = optional(list(string), ["0.0.0.0/0"])
       private_access_cidrs = optional(list(string), [])
     })
+    access_entries = optional(list(object({
+      principal_arn = string
+      k8s_groups    = optional(list(string))
+      k8s_username  = optional(string)
+      access_policies = optional(list(object({
+        policy     = string
+        type       = string
+        namespaces = optional(list(string), [])
+      })), [])
+    })), [])
     fargate_profile = optional(object({
       subnet_name_list = optional(list(string), [])
       profiles = optional(list(object({

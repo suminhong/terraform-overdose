@@ -1,3 +1,4 @@
+# [코드 16-16]
 karpenter:
   repository: oci://public.ecr.aws/karpenter/
   version: 1.0.7
