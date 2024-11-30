@@ -46,5 +46,7 @@ No inputs.
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_aws_login_url"></a> [aws\_login\_url](#output\_aws\_login\_url) | n/a |
 <!-- END_TF_DOCS -->

@@ -1,5 +1,7 @@
 locals {
   keycloak_realm_id = "master"
+  sso_url_name      = "aws"
+  keycloak_base_url = "/realms/${local.keycloak_realm_id}/protocol/saml/clients/${local.sso_url_name}"
 
   env_tags = {
     tf_env = "chapter5_17"
@@ -13,7 +15,7 @@ resource "keycloak_saml_client" "aws" {
   realm_id = local.keycloak_realm_id
 
   client_id                   = "urn:amazon:webservices"
-  idp_initiated_sso_url_name  = "aws"
+  idp_initiated_sso_url_name  = local.sso_url_name
   assertion_consumer_post_url = "https://signin.aws.amazon.com/saml"
 
   description = "Managed By Terraform"
@@ -28,7 +30,7 @@ resource "keycloak_saml_client" "aws" {
   signature_key_name  = "NONE"
 
   root_url = "$${authAdminUrl}"
-  base_url = "/realms/master/protocol/saml/clients/aws"
+  base_url = local.keycloak_base_url
   valid_redirect_uris = [
     "https://signin.aws.amazon.com/saml",
   ]
@@ -36,6 +38,7 @@ resource "keycloak_saml_client" "aws" {
 
 locals {
   keycloak_aws_client_id = keycloak_saml_client.aws.id
+  aws_login_url          = "${local.keycloak_url}${keycloak_saml_client.aws.base_url}"
 }
 
 ###################################################
