@@ -37,9 +37,9 @@ No modules.
 | <a name="input_eks_addon_version"></a> [eks\_addon\_version](#input\_eks\_addon\_version) | n/a | `string` | `"v1.18.1-eksbuild.3"` | no |
 | <a name="input_eks_version"></a> [eks\_version](#input\_eks\_version) | n/a | `string` | `"1.30"` | no |
 | <a name="input_env"></a> [env](#input\_env) | Environment Name | `string` | n/a | yes |
-| <a name="input_lb_info"></a> [lb\_info](#input\_lb\_info) | n/a | `map` | <pre>{<br>  "name": "test-lb",<br>  "type": "application"<br>}</pre> | no |
+| <a name="input_lb_info"></a> [lb\_info](#input\_lb\_info) | n/a | `map` | <pre>{<br/>  "name": "test-lb",<br/>  "type": "application"<br/>}</pre> | no |
 | <a name="input_lb_type"></a> [lb\_type](#input\_lb\_type) | n/a | `string` | `"application"` | no |
-| <a name="input_listener_info"></a> [listener\_info](#input\_listener\_info) | n/a | `map` | <pre>{<br>  "alpn_policy": "None",<br>  "port": 443,<br>  "protocol": "HTTPS",<br>  "rules": {}<br>}</pre> | no |
+| <a name="input_listener_info"></a> [listener\_info](#input\_listener\_info) | n/a | `map` | <pre>{<br/>  "alpn_policy": "None",<br/>  "port": 443,<br/>  "protocol": "HTTPS",<br/>  "rules": {}<br/>}</pre> | no |
 
 ## Outputs
 
