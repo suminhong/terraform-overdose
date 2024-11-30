@@ -1,5 +1,5 @@
 ###################################################
-# Node Class
+# [코드 16-32] EC2 Node Class
 ###################################################
 locals {
   volume_size_list = var.attribute.volume_size_list
