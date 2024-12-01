@@ -36,7 +36,7 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_attribute"></a> [attribute](#input\_attribute) | VPC 속성값 정의 | <pre>object({<br>    cidr           = string<br>    env            = optional(string, "develop")<br>    team           = optional(string, "devops")<br>    subnet_newbits = optional(number, 8)<br>    subnet_azs     = list(string)<br>    subnets        = optional(map(list(number)), {})<br>    nat = optional(object({<br>      create = optional(bool, false)<br>      subnet = optional(string, "")<br>      per_az = optional(bool, false)<br>    }), {})<br>  })</pre> | n/a | yes |
+| <a name="input_attribute"></a> [attribute](#input\_attribute) | VPC 속성값 정의 | <pre>object({<br/>    cidr           = string<br/>    env            = optional(string, "develop")<br/>    team           = optional(string, "devops")<br/>    subnet_newbits = optional(number, 8)<br/>    subnet_azs     = list(string)<br/>    subnets        = optional(map(list(number)), {})<br/>    nat = optional(object({<br/>      create = optional(bool, false)<br/>      subnet = optional(string, "")<br/>      per_az = optional(bool, false)<br/>    }), {})<br/>  })</pre> | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | 구분되는 VPC 이름 | `string` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | 모든 리소스에 적용될 태그 (map) | `map(string)` | `{}` | no |
 

@@ -32,7 +32,7 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_sg_set"></a> [sg\_set](#input\_sg\_set) | 보안 그룹별 인바운드 Rule Set | <pre>map(set(object({<br>    desc      = optional(string, "")<br>    protocol  = string<br>    from_port = number<br>    to_port   = number<br>    source    = string<br>  })))</pre> | n/a | yes |
+| <a name="input_sg_set"></a> [sg\_set](#input\_sg\_set) | 보안 그룹별 인바운드 Rule Set | <pre>map(set(object({<br/>    desc      = optional(string, "")<br/>    protocol  = string<br/>    from_port = number<br/>    to_port   = number<br/>    source    = string<br/>  })))</pre> | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | 모든 리소스에 적용될 태그 (map) | `map(string)` | `{}` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | 보안 그룹이 존재할 VPC의 ID | `string` | n/a | yes |
 | <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | 보안 그룹이 존재할 VPC의 이름 | `string` | n/a | yes |
