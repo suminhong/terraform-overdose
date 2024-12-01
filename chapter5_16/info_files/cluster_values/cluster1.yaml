@@ -30,15 +30,16 @@ network_info:
 #   - 012345678901
 #   - 456789012345
 
+# [코드 16-8] Access Entries 입력 데이터
 access_entries:
-- principal_arn: arn:aws:iam::706871976301:role/keycloak-role-admin
+- principal_arn: arn:aws:iam::000000000000:role/Admin
   access_policies:
   - policy: AmazonEKSClusterAdminPolicy
     type: cluster
   - policy: AmazonEKSAdminViewPolicy
     type: namespace
     namespaces: [kube-system]
-- principal_arn: arn:aws:iam::706871976301:user/cloudest
+- principal_arn: arn:aws:iam::000000000000:user/Honglab
   k8s_groups: [custom_group1, custom_group2]
   k8s_username: honglab
   access_policies:
@@ -86,6 +87,7 @@ helm_release:
       policy: sync
       serviceAccount.create: true
 
+# [코드 16-33]
 karpenter:
   stateless-01:
     subnet_name_list: [pri-eks]
