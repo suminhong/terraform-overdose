@@ -1,0 +1,10 @@
+%{ for vpc, ec2_set in vpc_ec2_map ~}
+%{ if length(ec2_set.ec2_info) > 0 ~}
+## In ${upper(vpc)} VPC
+| Name | ID | Private IP | Public IP | AZ |
+|---|---|---|---|---|
+%{ for k, v in ec2_set.ec2_info ~}
+| ${v.full_name} | [${v.instance_id}](https://${region}.console.aws.amazon.com/ec2/home?region=${region}#InstanceDetails:instanceId=${v.instance_id}) | `${v.private_ip}` |`${v.public_ip}` |${v.availability_zone} |
+%{ endfor ~}
+%{ endif ~}
+%{ endfor ~}

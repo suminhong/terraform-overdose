@@ -1,0 +1,17 @@
+# vpc 1개에 대한 구성 파일.
+
+cidr: 10.10.0.0/16
+
+env: develop
+team: devops
+
+subnet_newbits: 8
+subnet_azs: [a, c]
+subnets:
+  pri-app: [0, 1]
+  pub-nat: [2, 3]
+
+nat:
+  create: true
+  subnet: pub-nat
+  per_az: false

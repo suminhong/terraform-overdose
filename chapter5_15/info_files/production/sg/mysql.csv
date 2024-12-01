@@ -1,0 +1,4 @@
+protocol,from_port,to_port,source,desc
+tcp,3306,3306,self,
+tcp,3306,3306,my-ip,
+tcp,3306,3306,10.0.0.0/16,production vpc
