@@ -17,7 +17,7 @@ locals {
     })
   }
 
-  # EC2별 태그 선정의 (full_name 값을 사용하기 위해 ec2_set과 분리)
+  # EC2별로 태그를 미리 선언
   ec2_tags = {
     for k, v in local.ec2_set : k => merge(
       local.module_tag,
@@ -27,8 +27,19 @@ locals {
         Env     = v.env
         Team    = v.team
         Service = v.service
+        OS      = upper(v.os_type)
       }
     )
+  }
+
+  # 유효성 검사를 위한 변수들
+  valid_env           = ["develop", "staging", "rc", "production"]
+  valid_ebs_type      = ["standard", "gp2", "gp3", "io1", "io2", "sc1", "st1"]
+  valid_iops_ebs_type = ["gp3", "io1", "io2"]
+
+  device_name_patterns = {
+    linux   = "/dev/sd[fp]" # Linux 권장 볼륨 디바이스 이름
+    windows = "xvd[fp]"     # Windows 권장 볼륨 디바이스 이름
   }
 }
 
@@ -66,14 +77,19 @@ resource "aws_instance" "this" {
   tags = local.ec2_tags[each.key]
 
   lifecycle {
-    precondition { # 1. env 값이 develop, staging, rc, production 중 하나인가?
-      condition     = contains(["develop", "staging", "rc", "production"], each.value.env)
-      error_message = "[${local.vpc_name} VPC/${each.key} EC2] env 값은 반드시 [develop, staging, rc, production] 중 하나여야 합니다."
+    precondition { # 1. env 이름 유효성 검사
+      condition     = contains(local.valid_env, each.value.env)
+      error_message = "[${local.vpc_name} VPC/${each.key} EC2] env 값은 반드시 [${join(", ", local.valid_env)}] 중 하나여야 합니다."
     }
 
-    precondition { # 2. 루트 볼륨 타입 유효성 검사
-      condition     = contains(local.available_ebs_type, each.value.root_volume.type)
-      error_message = "[${local.vpc_name} VPC/${each.key} EC2] root볼륨: 유효하지 않은 볼륨 타입입니다. 사용 가능한 타입 : [${join(", ", local.available_ebs_type)}]"
+    precondition { # 2. 볼륨 타입 유효성 검사
+      condition     = contains(local.valid_ebs_type, each.value.root_volume.type)
+      error_message = "[${local.vpc_name} VPC/${each.key} EC2] ${each.value.root_volume.type}: 유효하지 않은 볼륨 타입입니다. root_volume.type은 반드시 [${join(", ", local.valid_ebs_type)}] 중 하나여야 합니다."
+    }
+
+    precondition { # 4. OS 타입 이름 유효성 검사
+      condition     = contains(keys(local.device_name_patterns), each.value.os_type)
+      error_message = "[${local.vpc_name} VPC/${each.key} EC2] ${each.value.os_type} : 유효하지 않은 운영체제 타입입니다. os_type은 반드시 [${join(", ", keys(local.device_name_patterns))}] 중 하나여야 합니다."
     }
   }
 }
@@ -100,23 +116,17 @@ resource "aws_eip" "this" {
 # Additional EBS Volumes
 ###################################################
 locals {
-  ec2_volume_set = [
+  # volume device 이름이 겹치는 경우,
+  # aws_instance.this의 3번 유효성 검사로 인해 에러가 발생되므로 try처리
+  ec2_volume_set = try([
     for ec2_name, ec2_attribute in local.ec2_set : {
       for volume in ec2_attribute.additional_volumes : "${ec2_name}_${volume.device}" => merge(
         { ec2_name = ec2_name }, volume, ec2_attribute
       )
     }
-  ]
+  ], [])
 
   merged_ec2_volume_set = module.merge_ec2_volume_set.output
-
-  available_ebs_type = ["standard", "gp2", "gp3", "io1", "io2", "sc1", "st1"]
-  valid_iops_type    = ["gp3", "io1", "io2"]
-
-  device_name_patterns = {
-    linux   = "/dev/sd[fp]" # Linux 권장 볼륨 디바이스 이름
-    windows = "xvd[fp]"     # Windows 권장 볼륨 디바이스 이름
-  }
 }
 
 module "merge_ec2_volume_set" {
@@ -130,7 +140,7 @@ resource "aws_ebs_volume" "this" {
   availability_zone = aws_instance.this[each.value.ec2_name].availability_zone
   size              = each.value.size
   type              = each.value.type
-  iops              = contains(local.valid_iops_type, each.value.type) ? each.value.iops : null
+  iops              = each.value.iops
 
   tags = merge(
     local.ec2_tags[each.value.ec2_name],
@@ -138,9 +148,26 @@ resource "aws_ebs_volume" "this" {
       Name = "${each.value.full_name}-${each.value.device}"
     }
   )
+
+  lifecycle {
+    precondition { # 2. 볼륨 타입 유효성 검사
+      condition     = contains(local.valid_ebs_type, each.value.type)
+      error_message = "[${local.vpc_name} VPC/${each.value.full_name} EC2:${each.value.device} EBS] ${each.value.type}: 유효하지 않은 볼륨 타입입니다. additional_volumes.*.type은 반드시 [${join(", ", local.valid_ebs_type)}] 중 하나여야 합니다."
+    }
+
+    precondition { # 3. iops 타입 유효성 검사
+      condition     = !(!contains(local.valid_iops_ebs_type, each.value.type) && each.value.iops != null)
+      error_message = "[${local.vpc_name} VPC/${each.value.full_name} EC2:${each.value.device} EBS] iops를 지정할 수 없는 볼륨 타입입니다. iops를 해제해 주세요. iops는 [${join(", ", local.valid_iops_ebs_type)}] 타입들만 지정할 수 있습니다."
+    }
+
+    precondition { # 5. 볼륨 장치 이름 유효성 검사
+      condition     = can(regex(local.device_name_patterns[each.value.os_type], each.value.device))
+      error_message = "[${local.vpc_name} VPC/${each.value.ec2_name} EC2:${each.value.device} EBS] 허용하지 않는 디바이스 이름입니다. ${each.value.os_type} OS에서 사용 가능한 디바이스 이름 패턴은 ${local.device_name_patterns[lower(each.value.os_type)]} 입니다."
+    }
+  }
 }
 
-## EBS Volume - EC2 Instance Attach
+## EBS 볼륨 - EC2 인스턴스 연결
 resource "aws_volume_attachment" "this" {
   for_each    = local.merged_ec2_volume_set
   device_name = each.value.device

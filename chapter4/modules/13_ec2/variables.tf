@@ -31,6 +31,7 @@ variable "ec2_set" {
     az              = string
     security_groups = list(string)
     # optional
+    os_type    = optional(string, "linux")
     ec2_key    = optional(string)
     ec2_role   = optional(string)
     private_ip = optional(string)
@@ -39,11 +40,11 @@ variable "ec2_set" {
       size = number
       type = optional(string, "gp3")
     })
-    additional_volumes = optional(set(object({
+    additional_volumes = optional(list(object({
       device = string
       size   = number
       type   = optional(string, "gp3")
-      iops   = optional(number, 3000)
+      iops   = optional(number)
     })), [])
   }))
 }
