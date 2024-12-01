@@ -1,13 +1,3 @@
-# 이미지 정보 불러오기
-data "aws_ami" "this" {
-  for_each = var.ec2_set
-
-  filter {
-    name   = "image-id"
-    values = [each.value.ami_id]
-  }
-}
-
 locals {
   vpc_name = var.vpc_name
   vpc_id   = var.vpc_id
@@ -23,14 +13,11 @@ locals {
   ec2_set = {
     for k, v in var.ec2_set : k => merge(v, {
       full_name       = "${var.vpc_name}-${split("-", v.subnet)[0]}-${k}",
-      image_arch      = data.aws_ami.this[k].architecture
-      image_name      = data.aws_ami.this[k].name
-      image_platform  = data.aws_ami.this[k].platform == "" ? "linux" : data.aws_ami.this[k].platform
       instance_family = split(".", v.instance_type)[0]
     })
   }
 
-  # EC2별 태그 선정의
+  # EC2별 태그 선정의 (full_name 값을 사용하기 위해 ec2_set과 분리)
   ec2_tags = {
     for k, v in local.ec2_set : k => merge(
       local.module_tag,
@@ -42,14 +29,6 @@ locals {
         Service = v.service
       }
     )
-  }
-
-  # AMI별 루트 볼륨 사이즈 계산
-  ami_root_volume_size = {
-    for k, v in data.aws_ami.this : k => [
-      for device in v.block_device_mappings : device.ebs.volume_size
-      if device.device_name == v.root_device_name
-    ][0]
   }
 }
 
@@ -84,14 +63,7 @@ resource "aws_instance" "this" {
     )
   }
 
-  tags = merge(
-    local.ec2_tags[each.key],
-    {
-      Image_Arch     = each.value.image_arch
-      Image_Name     = each.value.image_name
-      Image_Platform = each.value.image_platform
-    }
-  )
+  tags = local.ec2_tags[each.key]
 
   lifecycle {
     precondition { # 1. env 값이 develop, staging, rc, production 중 하나인가?
@@ -99,22 +71,7 @@ resource "aws_instance" "this" {
       error_message = "[${local.vpc_name} VPC/${each.key} EC2] env 값은 반드시 [develop, staging, rc, production] 중 하나여야 합니다."
     }
 
-    precondition { # 2. x86 아키텍처 이미지를 그래비톤 인스턴스로 설정할 수 없음.
-      condition     = !(startswith(each.value.image_arch, "x86") && strcontains(each.value.instance_family, "g"))
-      error_message = "[${local.vpc_name} VPC/${each.key} EC2] x86 아키텍처 이미지는 그래비톤 타입으로 실행할 수 없습니다. (현재 선택된 인스턴스 패밀리 : ${each.value.instance_family})"
-    }
-
-    precondition { # 3. arm 아키텍처 이미지는 그래비톤 인스턴스로만 설정할 수 있음.
-      condition     = !(startswith(each.value.image_arch, "arm") && !strcontains(each.value.instance_family, "g"))
-      error_message = "[${local.vpc_name} VPC/${each.key} EC2] arm 아키텍처 이미지는 그래비톤 타입으로만 실행할 수 있습니다. (현재 선택된 인스턴스 패밀리 : ${each.value.instance_family})"
-    }
-
-    precondition { # 4. 입력된 루트 볼륨 사이즈는 이미지에 지정된 루트 볼륨 사이즈 이상이어야 함.
-      condition     = each.value.root_volume.size >= local.ami_root_volume_size[each.key]
-      error_message = "[${local.vpc_name} VPC/${each.key} EC2] 루트 볼륨 사이즈는 ${local.ami_root_volume_size[each.key]} 이상이어야 합니다."
-    }
-
-    precondition { # 5. 루트 볼륨 타입 유효성 검사
+    precondition { # 2. 루트 볼륨 타입 유효성 검사
       condition     = contains(local.available_ebs_type, each.value.root_volume.type)
       error_message = "[${local.vpc_name} VPC/${each.key} EC2] root볼륨: 유효하지 않은 볼륨 타입입니다. 사용 가능한 타입 : [${join(", ", local.available_ebs_type)}]"
     }
@@ -181,18 +138,6 @@ resource "aws_ebs_volume" "this" {
       Name = "${each.value.full_name}-${each.value.device}"
     }
   )
-
-  lifecycle {
-    precondition { # 5. 추가 볼륨 타입 유효성 검사
-      condition     = contains(local.available_ebs_type, each.value.type)
-      error_message = "[${local.vpc_name} VPC/${each.value.ec2_name} EC2] ${each.value.device}: 유효하지 않은 볼륨 타입입니다. 사용 가능한 타입 : [${join(", ", local.available_ebs_type)}]"
-    }
-
-    precondition { # 6. 볼륨 디바이스 이름 유효성 검사
-      condition     = can(regex(local.device_name_patterns[each.value.image_platform], each.value.device))
-      error_message = "[${local.vpc_name} VPC/${each.value.ec2_name} EC2] ${each.value.device}: 유효하지 않은 디바이스 이름입니다. ${each.value.image_platform} OS에서 권장되는 디바이스 이름 패턴은 ${local.device_name_patterns[lower(each.value.image_platform)]} 입니다."
-    }
-  }
 }
 
 ## EBS Volume - EC2 Instance Attach
