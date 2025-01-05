@@ -2,7 +2,7 @@
 # 수락자 계정의 정보 불러오기
 ###################################################
 module "accepter" {
-  source = "../utility/9_1_get_aws_metadata"
+  source = "../chapter9_utility/1_get_aws_metadata"
   providers = {
     aws = aws.accepter
   }

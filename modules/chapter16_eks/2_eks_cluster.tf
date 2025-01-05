@@ -263,7 +263,7 @@ resource "aws_eks_access_entry" "standard" {
 
 # EKS Access Entry - Policy association 을 반복생성하기 위한 데이터 생성
 module "merge_access_entry_policy_association" {
-  source = "../utility/9_3_merge_map_in_list"
+  source = "../chapter9_utility/3_merge_map_in_list"
   input = flatten([
     for k, v in local.access_entries : {
       for p in v.access_policies : "${k}_${p.policy}" => merge(

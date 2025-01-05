@@ -130,7 +130,7 @@ locals {
 }
 
 module "merge_ec2_volume_set" {
-  source = "../utility/9_3_merge_map_in_list"
+  source = "../chapter9_utility/3_merge_map_in_list"
   input  = local.ec2_volume_set
 }
 

@@ -1,5 +1,5 @@
 module "current" {
-  source = "../utility/9_1_get_aws_metadata"
+  source = "../chapter9_utility/1_get_aws_metadata"
 }
 
 locals {

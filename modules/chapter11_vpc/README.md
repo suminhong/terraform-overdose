@@ -15,7 +15,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_current"></a> [current](#module\_current) | ../utility/9_1_get_aws_metadata | n/a |
+| <a name="module_current"></a> [current](#module\_current) | ../chapter9_utility/1_get_aws_metadata | n/a |
 
 ## Resources
 

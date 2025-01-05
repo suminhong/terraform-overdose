@@ -16,7 +16,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_accepter"></a> [accepter](#module\_accepter) | ../utility/9_1_get_aws_metadata | n/a |
+| <a name="module_accepter"></a> [accepter](#module\_accepter) | ../chapter9_utility/1_get_aws_metadata | n/a |
 
 ## Resources
 

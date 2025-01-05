@@ -15,7 +15,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_merge_ec2_volume_set"></a> [merge\_ec2\_volume\_set](#module\_merge\_ec2\_volume\_set) | ../utility/9_3_merge_map_in_list | n/a |
+| <a name="module_merge_ec2_volume_set"></a> [merge\_ec2\_volume\_set](#module\_merge\_ec2\_volume\_set) | ../chapter9_utility/3_merge_map_in_list | n/a |
 
 ## Resources
 
