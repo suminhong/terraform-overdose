@@ -37,7 +37,7 @@ locals {
   module_tags = merge(
     var.tags,
     {
-      tf_module   = "16_eks"
+      tf_module   = "chapter16_eks"
       EKS_Cluster = local.cluster_name
       Env         = local.env
     }

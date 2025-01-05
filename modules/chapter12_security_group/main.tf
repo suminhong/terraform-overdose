@@ -16,7 +16,7 @@ locals {
     var.tags,
     local.vpc_tags,
     {
-      tf_module = "12_security_group"
+      tf_module = "chapter12_security_group"
     }
   )
 }
