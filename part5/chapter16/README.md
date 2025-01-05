@@ -11,8 +11,8 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_eks_cluster1"></a> [eks\_cluster1](#module\_eks\_cluster1) | ../modules/16_eks | n/a |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../modules/11_vpc | n/a |
+| <a name="module_eks_cluster1"></a> [eks\_cluster1](#module\_eks\_cluster1) | ../../modules/chapter16_eks | n/a |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/chapter11_vpc | n/a |
 
 ## Resources
 

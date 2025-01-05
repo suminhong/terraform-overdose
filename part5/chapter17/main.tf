@@ -4,7 +4,7 @@ locals {
   keycloak_base_url = "/realms/${local.keycloak_realm_id}/protocol/saml/clients/${local.sso_url_name}"
 
   env_tags = {
-    tf_env = "chapter5_17"
+    tf_env = "part5/chapter17"
   }
 }
 

@@ -7,15 +7,15 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_local"></a> [local](#provider\_local) | n/a |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.5.2 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_ec2"></a> [ec2](#module\_ec2) | ../../modules/13_ec2 | n/a |
-| <a name="module_sg"></a> [sg](#module\_sg) | ../../modules/12_security_group | n/a |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/11_vpc | n/a |
+| <a name="module_ec2"></a> [ec2](#module\_ec2) | ../../../modules/chapter13_ec2 | n/a |
+| <a name="module_sg"></a> [sg](#module\_sg) | ../../../modules/chapter12_security_group | n/a |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../../modules/chapter11_vpc | n/a |
 
 ## Resources
 

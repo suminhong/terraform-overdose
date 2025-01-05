@@ -1,6 +1,6 @@
 locals {
   env_tags = {
-    tf_env = "chapter5_16"
+    tf_env = "part5/chapter16"
   }
 
   info_files = "${path.root}/info_files"
@@ -18,7 +18,7 @@ module "vpc" {
   for_each = toset([
     for vpcfile in fileset(local.vpc_files, "*.yaml") : trimsuffix(basename(vpcfile), ".yaml")
   ])
-  source = "../modules/11_vpc"
+  source = "../../modules/chapter11_vpc"
 
   name      = each.key
   attribute = yamldecode(file("${local.vpc_files}/${each.key}.yaml"))
@@ -30,7 +30,7 @@ module "vpc" {
 # Create EKS : cluster1
 ###################################################
 module "eks_cluster1" {
-  source = "../modules/16_eks"
+  source = "../../modules/chapter16_eks"
   vpc_info = {
     vpc_id     = module.vpc[local.cluster1_yaml.network_info.vpc_name].vpc_id
     subnet_ids = module.vpc[local.cluster1_yaml.network_info.vpc_name].subnet_ids
