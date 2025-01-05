@@ -12,7 +12,6 @@
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 3.0 |
 | <a name="provider_aws.seoul"></a> [aws.seoul](#provider\_aws.seoul) | ~> 3.0 |
-| <a name="provider_aws.terraform-b"></a> [aws.terraform-b](#provider\_aws.terraform-b) | ~> 3.0 |
 | <a name="provider_aws.tokyo"></a> [aws.tokyo](#provider\_aws.tokyo) | ~> 3.0 |
 
 ## Modules
