@@ -11,7 +11,7 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../modules/11_vpc | n/a |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../../modules/chapter11_vpc | n/a |
 
 ## Resources
 

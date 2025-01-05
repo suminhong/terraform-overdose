@@ -11,7 +11,7 @@ locals {
   }
 
   env_tags = {
-    tf_env = "chapter4_14/env_network"
+    tf_env = "part4/chapter14/env_network"
   }
 }
 
@@ -30,7 +30,7 @@ data "terraform_remote_state" "vpc" {
 # Requester가 Seoul 프로바이더고 Accepter가 Virginia 프로바이더인 경우
 module "seoul_to_virginia_peering" {
   ## 메타인자들
-  source = "../modules/14_vpc_peering"
+  source = "../../../modules/chapter14_vpc_peering"
   for_each = {
     for k, v in local.topology : k => v
     if v.requester.tf_env == "seoul" && v.accepter.tf_env == "virginia"
@@ -50,7 +50,7 @@ module "seoul_to_virginia_peering" {
 # Requester가 Seoul 프로바이더고 Accepter가 Seoul 프로바이더인 경우
 module "seoul_to_seoul_peering" {
   ## 메타인자들
-  source = "../modules/14_vpc_peering"
+  source = "../../../modules/chapter14_vpc_peering"
   for_each = {
     for k, v in local.topology : k => v
     if v.requester.tf_env == "seoul" && v.accepter.tf_env == "seoul"

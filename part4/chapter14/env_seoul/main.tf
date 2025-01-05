@@ -10,7 +10,7 @@ locals {
   }
 
   env_tags = {
-    tf_env = "chapter4_14/env_seoul"
+    tf_env = "part4/chapter14/env_seoul"
   }
 }
 
@@ -19,7 +19,7 @@ locals {
 ###################################################
 module "vpc" {
   for_each = local.vpc_set
-  source   = "../modules/11_vpc"
+  source   = "../../../modules/chapter11_vpc"
 
   name      = each.key
   attribute = local.vpc_info_map[each.key]
