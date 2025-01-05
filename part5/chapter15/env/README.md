@@ -7,7 +7,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_local"></a> [local](#provider\_local) | 2.5.2 |
+| <a name="provider_local"></a> [local](#provider\_local) | n/a |
 
 ## Modules
 
