@@ -25,7 +25,7 @@ locals {
 }
 
 module "sg" {
-  source = "../12_security_group"
+  source = "../chapter12_security_group"
 
   vpc_name = local.vpc_name
   vpc_id   = local.vpc_id

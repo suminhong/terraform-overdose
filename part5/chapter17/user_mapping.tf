@@ -56,7 +56,7 @@ data "aws_iam_policy" "this" {
 
 # "{롤}_{권한}" 매핑 정보를 머지된 형태로 반환
 module "merge_role_policy_attachments" {
-  source = "../modules/chapter9_utility/3_merge_map_in_list"
+  source = "../../modules/chapter9_utility/3_merge_map_in_list"
   input = flatten([
     for k, v in local.aws_roles : {
       for p in v.policies : "${k}_${p}" => {

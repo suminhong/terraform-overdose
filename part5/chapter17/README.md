@@ -9,15 +9,15 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
-| <a name="provider_http"></a> [http](#provider\_http) | n/a |
-| <a name="provider_keycloak"></a> [keycloak](#provider\_keycloak) | >= 4.4.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.82.2 |
+| <a name="provider_http"></a> [http](#provider\_http) | 3.4.5 |
+| <a name="provider_keycloak"></a> [keycloak](#provider\_keycloak) | 4.4.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_merge_role_policy_attachments"></a> [merge\_role\_policy\_attachments](#module\_merge\_role\_policy\_attachments) | ../modules/chapter9_utility/3_merge_map_in_list | n/a |
+| <a name="module_merge_role_policy_attachments"></a> [merge\_role\_policy\_attachments](#module\_merge\_role\_policy\_attachments) | ../../modules/chapter9_utility/3_merge_map_in_list | n/a |
 
 ## Resources
 

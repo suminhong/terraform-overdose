@@ -22,7 +22,7 @@
 | <a name="module_karpenter_nodes"></a> [karpenter\_nodes](#module\_karpenter\_nodes) | ./karpenter_nodes | n/a |
 | <a name="module_karpenter_release"></a> [karpenter\_release](#module\_karpenter\_release) | ./helm_release | n/a |
 | <a name="module_merge_access_entry_policy_association"></a> [merge\_access\_entry\_policy\_association](#module\_merge\_access\_entry\_policy\_association) | ../chapter9_utility/3_merge_map_in_list | n/a |
-| <a name="module_sg"></a> [sg](#module\_sg) | ../12_security_group | n/a |
+| <a name="module_sg"></a> [sg](#module\_sg) | ../chapter12_security_group | n/a |
 
 ## Resources
 
