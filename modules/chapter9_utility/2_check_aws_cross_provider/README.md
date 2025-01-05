@@ -31,10 +31,10 @@ No inputs.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_a_account_id"></a> [a\_account\_id](#output\_a\_account\_id) | # Additional OUTPUT |
+| <a name="output_a_account_id"></a> [a\_account\_id](#output\_a\_account\_id) | # 추가 출력값 |
 | <a name="output_a_region"></a> [a\_region](#output\_a\_region) | n/a |
 | <a name="output_b_account_id"></a> [b\_account\_id](#output\_b\_account\_id) | n/a |
 | <a name="output_b_region"></a> [b\_region](#output\_b\_region) | n/a |
-| <a name="output_is_cross_account"></a> [is\_cross\_account](#output\_is\_cross\_account) | # OUTPUT |
+| <a name="output_is_cross_account"></a> [is\_cross\_account](#output\_is\_cross\_account) | # 출력값 |
 | <a name="output_is_cross_region"></a> [is\_cross\_region](#output\_is\_cross\_region) | n/a |
 <!-- END_TF_DOCS -->

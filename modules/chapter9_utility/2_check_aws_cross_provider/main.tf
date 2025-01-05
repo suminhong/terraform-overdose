@@ -1,4 +1,4 @@
-## a provider
+## 프로바이더 a
 data "aws_caller_identity" "a" {
   provider = aws.a
 }
@@ -6,7 +6,7 @@ data "aws_region" "a" {
   provider = aws.a
 }
 
-## b provider
+## 프로바이더 b
 data "aws_caller_identity" "b" {
   provider = aws.b
 }
@@ -22,7 +22,7 @@ locals {
   b_region = data.aws_region.b.name
 }
 
-## OUTPUT
+## 출력값
 output "is_cross_account" {
   value = local.a_account_id != local.b_account_id
 }
@@ -31,7 +31,7 @@ output "is_cross_region" {
   value = local.a_region != local.b_region
 }
 
-## Additional OUTPUT
+## 추가 출력값
 output "a_account_id" {
   value = local.a_account_id
 }

@@ -12,7 +12,11 @@ No requirements.
 
 ## Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_check_cross"></a> [check\_cross](#module\_check\_cross) | ../modules/chapter9_utility/2_check_aws_cross_provider | n/a |
+| <a name="module_current"></a> [current](#module\_current) | ../modules/chapter9_utility/1_get_aws_metadata | n/a |
+| <a name="module_merge_vpc_list"></a> [merge\_vpc\_list](#module\_merge\_vpc\_list) | ../modules/chapter9_utility/3_merge_map_in_list | n/a |
 
 ## Resources
 
@@ -25,6 +29,7 @@ No modules.
 | [aws_lb_listener.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener) | resource |
 | [aws_lb_listener_rule.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener_rule) | resource |
 | [aws_security_group.example](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
+| [aws_vpc_peering_connection.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_peering_connection) | resource |
 | [time_sleep.wait_30_seconds](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [aws_ami.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_eks_addon_version.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_addon_version) | data source |
