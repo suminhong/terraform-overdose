@@ -29,7 +29,7 @@ data "terraform_remote_state" "vpc" {
 
 # Requester가 Seoul 프로바이더고 Accepter가 Virginia 프로바이더인 경우
 module "seoul_to_virginia_peering" {
-  ## 메타인자들
+  # 메타인수들
   source = "../../../modules/chapter14_vpc_peering"
   for_each = {
     for k, v in local.topology : k => v
@@ -40,7 +40,7 @@ module "seoul_to_virginia_peering" {
     aws.accepter  = aws.virginia
   }
 
-  ## 실제 인풋들
+  # 실제 인풋들
   name             = each.key
   requester_vpc_id = local.vpc_ids[each.value.requester.tf_env][each.value.requester.vpc]
   accepter_vpc_id  = local.vpc_ids[each.value.accepter.tf_env][each.value.accepter.vpc]
@@ -49,7 +49,7 @@ module "seoul_to_virginia_peering" {
 
 # Requester가 Seoul 프로바이더고 Accepter가 Seoul 프로바이더인 경우
 module "seoul_to_seoul_peering" {
-  ## 메타인자들
+  # 메타인수들
   source = "../../../modules/chapter14_vpc_peering"
   for_each = {
     for k, v in local.topology : k => v
@@ -60,7 +60,7 @@ module "seoul_to_seoul_peering" {
     aws.accepter  = aws.seoul
   }
 
-  ## 실제 인풋들
+  # 실제 인풋들
   name             = each.key
   requester_vpc_id = local.vpc_ids[each.value.requester.tf_env][each.value.requester.vpc]
   accepter_vpc_id  = local.vpc_ids[each.value.accepter.tf_env][each.value.accepter.vpc]
