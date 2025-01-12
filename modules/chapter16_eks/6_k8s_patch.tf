@@ -34,7 +34,7 @@ resource "kubernetes_storage_class_v1" "gp3" {
 }
 
 ###################################################
-# [코드 16-7] aws-auth configMap data 덮어쓰기
+# [코드 16-7 & 8] aws-auth configMap data 덮어쓰기
 # Deprecate될 방법이므로 참고만 하자
 ###################################################
 # locals {
@@ -79,7 +79,7 @@ resource "kubernetes_storage_class_v1" "gp3" {
 # }
 
 ###################################################
-# [코드 16-11, 16-12] 오버프로비저닝을 위한 파드 배포
+# [코드 16-12 & 13] 오버프로비저닝을 위한 파드 배포
 ###################################################
 resource "kubernetes_priority_class_v1" "overprovisioning" {
   metadata {

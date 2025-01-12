@@ -76,7 +76,7 @@ eks_addon:
     enable: true
     version: v1.31.2-eksbuild.3
 
-# [코드 16-18]
+# [코드 16-19]
 helm_release:
   metrics-server:
     enable: true
@@ -87,7 +87,7 @@ helm_release:
       policy: sync
       serviceAccount.create: true
 
-# [코드 16-33]
+# [코드 16-34 & 35]
 karpenter:
   stateless-01:
     subnet_name_list: [pri-eks]
@@ -126,7 +126,7 @@ karpenter:
       imgae_alias: [al2@latest]
       image_arch: [amd64]
       image_os: [linux]
-      instance_capacity: [on-demand, spot]
+      instance_capacity: [on-demand]
       instance_family: [t3]
       instance_size: [small, medium]
     disruption:
