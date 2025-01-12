@@ -19,4 +19,23 @@ nat:
   subnet: pub-nat
   per_az: true # nat.subnet의 가용영역별로 생성
 
-# 추가로 고려할만한 구성 : rtb_override
+# 11.6 더 고려해볼 만한 것
+# # code 11-54
+# db_subnets:
+# - pri-db
+
+# # code 11-55
+# subnet_tags:
+#   pri-app:
+#     "kubernetes.io/cluster/terraform-eks": "shared"
+#     "kubernetes.io/role/internal-elb": "1"
+
+# # code 11-57
+# routing_override: true  # true인 경우, custom_rtb에 명세된 라우트 테이블만 생성된다.
+# custom_rtb:
+#   pri-rtb1:
+#     subnets:
+#     - pri-app
+#     - pri-db
+#     routing:
+#       0.0.0.0/0: vpce-12345

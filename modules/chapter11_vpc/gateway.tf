@@ -1,7 +1,7 @@
 ###################################################
 # Internet Gateway
 ###################################################
-## public subnet이 하나라도 있는 경우 생성
+# 인터넷 게이트웨이 생성 - public subnet이 하나라도 있는 경우
 resource "aws_internet_gateway" "this" {
   count  = local.enable_igw ? 1 : 0
   vpc_id = local.vpc_id
@@ -14,7 +14,7 @@ resource "aws_internet_gateway" "this" {
   )
 }
 
-## Public RT에 IGW로의 Route 추가
+# 퍼블릭 라우트 테이블에 인터넷 게이트웨이로의 라우트 추가
 resource "aws_route" "public_igw" {
   count = local.enable_igw ? 1 : 0
 
@@ -26,16 +26,17 @@ resource "aws_route" "public_igw" {
 ###################################################
 # NAT Gateway
 ###################################################
-## nat.create == true인 경우에만 생성 (default : false)
+# nat.create == true인 경우에만 생성 (default : false)
 locals {
   nat = var.attribute.nat
 
-  # nat.per_az == true인 경우, nat.subnet 서브넷의 가용 영역만큼 NAT 생성 / false인 경우 한개만 생성
+  # nat.per_az == true인 경우: nat.subnet 서브넷의 가용 영역만큼 NAT 생성
+  # nat.per_az == false인 경우: 한개만 생성
   nat_azs = slice(local.subnet_azs, 0, local.nat.per_az ? try(length(local.subnets[local.nat.subnet]), 0) : 1)
   nat_set = local.nat.create ? toset(local.nat_azs) : toset([])
 }
 
-## NAT용 EIP 생성
+# NAT 게이트웨이용 EIP 생성
 resource "aws_eip" "this" {
   for_each = local.nat_set
 
@@ -47,7 +48,7 @@ resource "aws_eip" "this" {
   )
 }
 
-## NAT GW 생성
+# NAT 게이트웨이 생성
 resource "aws_nat_gateway" "this" {
   for_each      = local.nat_set
   subnet_id     = local.subnet_ids_with_az[local.nat.subnet][each.key]
@@ -68,7 +69,7 @@ resource "aws_nat_gateway" "this" {
   }
 }
 
-## Private RTs에 NAT로의 Route 추가
+# Private RTs에 NAT로의 Route 추가
 resource "aws_route" "private_nat" {
   for_each = local.nat.create ? local.private_rts : {}
 

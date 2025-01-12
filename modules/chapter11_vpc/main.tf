@@ -54,7 +54,7 @@ locals {
 ###################################################
 # Routing Tables
 ###################################################
-## Public * 1
+# 퍼블릭 라우트 테이블 생성
 resource "aws_route_table" "public" {
   count  = local.enable_igw ? 1 : 0
   vpc_id = local.vpc_id
@@ -67,7 +67,7 @@ resource "aws_route_table" "public" {
   )
 }
 
-## Private * AZ
+# 프라이빗 라우트 테이블 AZ별로 생성
 resource "aws_route_table" "private" {
   for_each = toset(local.subnet_azs)
   vpc_id   = local.vpc_id
@@ -80,7 +80,7 @@ resource "aws_route_table" "private" {
   )
 }
 
-## Routing Table Output들 정리
+# 라우트 테이블 Output들 정리
 locals {
   public_rt = try(aws_route_table.public[0].id, "")
   private_rts = {
@@ -92,8 +92,8 @@ locals {
 # Subnets
 ###################################################
 locals {
-  ## 반복을 수월하게 돌리기 위한 데이터 처리 작업
-  ### 2차원을 1차원으로 평탄화 필요 - 리스트로 flatten 사용
+  # 반복을 수월하게 돌리기 위한 데이터 처리 작업
+  # 2차원을 1차원으로 평탄화 필요 - 리스트로 flatten 사용
   subnets_data = flatten([
     for name, indices in local.subnets : [
       for idx in indices : {
@@ -105,13 +105,13 @@ locals {
     ]
   ])
 
-  ### 실제로 반복에 사용될 변수 생성
+  # 실제로 반복에 사용될 변수 생성
   subnets_map = {
     for s in local.subnets_data : "${replace(s.name, "-", "_")}_${s.az}" => s
   }
 }
 
-## 서브넷 생성
+# 서브넷 생성
 resource "aws_subnet" "this" {
   for_each                = local.subnets_map
   cidr_block              = each.value.cidr
@@ -140,7 +140,7 @@ resource "aws_subnet" "this" {
   }
 }
 
-## Subnet Output들 정리
+# Subnet Output들 정리
 locals {
   subnet_ids = {
     for k, v in local.subnets : k => [
@@ -158,8 +158,8 @@ locals {
 ###################################################
 # Subnet - Routing Table Association
 ###################################################
-## Public Subnets -> Public RTB
-## Priavte Subnets -> Private RTB[AZ]
+# Public Subnets -> Public RTB
+# Priavte Subnets -> Private RTB[AZ]
 resource "aws_route_table_association" "this" {
   for_each       = local.subnets_map
   route_table_id = each.value.is_public ? local.public_rt : local.private_rts[each.value.az]
