@@ -31,7 +31,7 @@ No inputs.
 | Name | Description |
 |------|-------------|
 | <a name="output_account_alias"></a> [account\_alias](#output\_account\_alias) | n/a |
-| <a name="output_account_id"></a> [account\_id](#output\_account\_id) | n/a |
+| <a name="output_account_id"></a> [account\_id](#output\_account\_id) | 출력값 |
 | <a name="output_az_names"></a> [az\_names](#output\_az\_names) | n/a |
 | <a name="output_region_code"></a> [region\_code](#output\_region\_code) | n/a |
 | <a name="output_region_name"></a> [region\_name](#output\_region\_name) | n/a |
