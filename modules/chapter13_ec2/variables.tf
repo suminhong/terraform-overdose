@@ -19,7 +19,7 @@ variable "sg_id_map" {
 }
 
 variable "ec2_set" {
-  description = "보안 그룹 ID 맵 데이터"
+  description = "EC2별 명세 Set"
   type = map(object({
     # required
     env             = string

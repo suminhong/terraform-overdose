@@ -97,7 +97,7 @@ resource "aws_instance" "this" {
 ###################################################
 # Create EIP
 ###################################################
-## Public EC2인 경우
+# Public EC2인 경우
 resource "aws_eip" "this" {
   for_each = {
     for k, v in local.ec2_set : k => v
@@ -134,7 +134,7 @@ module "merge_ec2_volume_set" {
   input  = local.ec2_volume_set
 }
 
-## EBS Volume 생성
+# EBS Volume 생성
 resource "aws_ebs_volume" "this" {
   for_each          = local.merged_ec2_volume_set
   availability_zone = aws_instance.this[each.value.ec2_name].availability_zone
@@ -167,7 +167,7 @@ resource "aws_ebs_volume" "this" {
   }
 }
 
-## EBS 볼륨 - EC2 인스턴스 연결
+# EBS 볼륨 - EC2 인스턴스 연결
 resource "aws_volume_attachment" "this" {
   for_each    = local.merged_ec2_volume_set
   device_name = each.value.device
