@@ -3,8 +3,7 @@ variable "env" {
   default = "develop"
 }
 
-resource "aws_instance" "nginx" {
-  count         = var.env == "production" ? 1 : 0
+resource "aws_instance" "this" {
   ami           = "ami-123456"
-  instance_type = "t3.medium"
+  instance_type = var.env == "production" ? "m5.xlarge" : "t3.medium"
 }

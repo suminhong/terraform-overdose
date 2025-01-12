@@ -1,27 +1,15 @@
-# 리소스 블럭 사용 예시 - 기본 프로바이더 사용
-resource "aws_instance" "this" {
-  provider      = aws # 생략 가능
-  instance_type = "t3.medium"
+# profile 지정 예시
+provider "aws" {
+  region  = "ap-northeast-2"
+  profile = "terraform"
 }
 
-# 리소스 블럭 사용 예시 - 추가 프로바이더 사용
-resource "aws_instance" "this" {
-  provider      = aws.terraform-b # 프로바이더의 앨리어스를 명시
-  instance_type = "t3.medium"
-}
+# assume role 설정 예시
+provider "aws" {
+  region  = "ap-northeast-2"
+  profile = "terraform"
 
-# 모듈 블럭 사용 예시 - 기본 프로바이더 사용
-module "my_module" {
-  source = "./modules/my_module"
-  providers = { # 생략 가능
-    aws = aws
-  }
-}
-
-# 모듈 블럭 사용 예시 - 추가 프로바이더 사용
-module "my_module" {
-  source = "./modules/my_module"
-  providers = {
-    aws = aws.terraform-b # 프로바이더의 앨리어스를 명시
+  assume_role {
+    role_arn = "arn:aws:iam::${account_id}:role/AssumeRole"
   }
 }

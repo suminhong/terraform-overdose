@@ -1,15 +1,16 @@
-# profile 지정 예시
-provider "aws" {
-  region  = "ap-northeast-2"
-  profile = "terraform"
-}
+terraform {
+  required_version = ">= 0.12.0"
 
-# assume role 설정 예시
-provider "aws" {
-  region  = "ap-northeast-2"
-  profile = "terraform"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.0"
+    }
+  }
 
-  assume_role {
-    role_arn = "arn:aws:iam::${account_id}:role/AssumeRole"
+  backend "s3" {
+    bucket = "my-terraform-state-bucket"
+    key    = "state/terraform.tfstate"
+    region = "ap-northeast-2"
   }
 }

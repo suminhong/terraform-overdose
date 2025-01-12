@@ -1,16 +1,10 @@
-resource "aws_db_instance" "rds" {
-  identifier        = "example-cluster"
-  db_name           = "example"
-  allocated_storage = 20
-  storage_type      = "gp3"
-  engine            = "postgres"
-  engine_version    = "16.3"
-  instance_class    = "db.t3.micro"
-  username          = "example"
-  password          = var.db_password
-}
+# 최신 Ubuntu 20.04 AMI 정보를 조회하는 예시
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners      = ["099720109477"] # Ubuntu의 공식 AMI
 
-variable "db_password" {
-  type        = string
-  description = "데이터베이스 비밀번호"
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+  }
 }

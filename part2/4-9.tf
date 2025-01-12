@@ -1,9 +1,9 @@
-variable "env" {
-  type    = string
-  default = "develop"
+variable "is_production" {
+  type    = bool
+  default = false
 }
 
 resource "aws_instance" "this" {
   ami           = "ami-123456"
-  instance_type = var.env == "production" ? "m5.xlarge" : var.env == "staging" ? "m5.large" : "t3.medium"
+  instance_type = var.is_production ? "m5.xlarge" : "t3.medium"
 }
