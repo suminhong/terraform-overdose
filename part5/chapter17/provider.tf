@@ -13,7 +13,7 @@ terraform {
 }
 
 locals {
-  keycloak_url = "http://localhost" # 키클락 주소
+  keycloak_url = "http://localhost" # 키클록 주소
 }
 
 provider "keycloak" {

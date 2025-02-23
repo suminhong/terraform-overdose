@@ -1,4 +1,4 @@
-# AWS IAM 롤 - 키클락 그룹 간 매핑 정보
+# AWS IAM 롤 - 키클록 그룹 간 매핑 정보
 aws_roles:
 - name: readonly
   policies:

@@ -9,7 +9,7 @@ locals {
 }
 
 ###################################################
-# 키클락 : AWS 클라이언트 생성
+# 키클록: AWS 클라이언트 생성
 ###################################################
 resource "keycloak_saml_client" "aws" {
   realm_id = local.keycloak_realm_id
@@ -42,7 +42,7 @@ locals {
 }
 
 ###################################################
-# 키클락 : 매퍼(Mapper) 생성
+# 키클록: 매퍼(Mapper) 생성
 ###################################################
 resource "keycloak_saml_user_attribute_protocol_mapper" "aws_session_name" {
   realm_id      = local.keycloak_realm_id
@@ -84,7 +84,7 @@ resource "keycloak_generic_protocol_mapper" "aws_session_role" {
 }
 
 ###################################################
-# AWS : SAML 프로바이더 생성
+# AWS: SAML 프로바이더 생성
 ###################################################
 data "http" "this" {
   url = "${local.keycloak_url}/realms/${local.keycloak_realm_id}/protocol/saml/descriptor"

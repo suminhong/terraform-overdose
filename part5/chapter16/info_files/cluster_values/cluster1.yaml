@@ -104,12 +104,12 @@ karpenter:
       consolidationPolicy: WhenEmptyOrUnderutilized
       consolidateAfter: 10m
       budgets:
-      # Empty or Drifted 상태의 노드는 전체의 20%까지 죽여도 됨
+      # Empty or Drifted 상태의 노드는 전체의 20%까지 죽여도 된다.
       - nodes: "20%"
         reasons: [Empty, Drifted]
-      # 동시에 최대 3대까지 죽을 수 있음
+      # 동시에 최대 3대까지 죽을 수 있다.
       - nodes: "3"
-      # 매일 00:00~00:30 동안은 노드가 죽지 않음
+      # 매일 00:00~00:30분 동안은 노드가 죽지 않는다.
       - nodes: "0"
         schedule: "@daily"
         duration: 30m

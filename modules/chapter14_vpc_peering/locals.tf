@@ -42,11 +42,11 @@ locals {
   accepter_account_id = module.accepter.account_id
   accepter_region     = module.accepter.region_name
 
-  # 데이터블록으로 조회한 VPC 정보
+  # 데이터 블록으로 조회한 VPC 정보
   requester_vpc = data.aws_vpc.requester
   accepter_vpc  = data.aws_vpc.accepter
 
-  # 데이터블록으로 조회한 라우팅 테이블들 정보
+  # 데이터 블록으로 조회한 라우팅 테이블들 정보
   requester_rtbs = data.aws_route_tables.requester.ids
   accepter_rtbs  = data.aws_route_tables.accepter.ids
 

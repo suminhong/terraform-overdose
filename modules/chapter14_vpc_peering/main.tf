@@ -10,7 +10,7 @@ resource "aws_vpc_peering_connection" "this" {
   peer_owner_id = local.accepter_account_id
   peer_region   = local.accepter_region
 
-  # accepter 리소스를 별도로 생성할 것이기 때문에 false여도 상관 없음
+  # accepter 리소스를 별도로 생성할 것이기 때문에 false
   auto_accept = false
 
   tags = local.module_tag

@@ -24,7 +24,7 @@ provider "helm" {
   }
 }
 
-# [코드 16-30] kubectl 프로바이더 선언
+# [코드 16-31] kubectl 프로바이더 선언
 terraform {
   required_providers {
     kubectl = {

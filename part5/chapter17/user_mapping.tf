@@ -15,7 +15,7 @@ locals {
 ###################################################
 # IAM 롤 구성
 ###################################################
-# 키클락 프로바이더를 신뢰하는 정책 검색
+# 키클록 프로바이더를 신뢰하는 정책 검색
 data "aws_iam_policy_document" "this" {
   statement {
     actions = ["sts:AssumeRoleWithSAML"]
@@ -32,8 +32,8 @@ data "aws_iam_policy_document" "this" {
   }
 }
 
-# 키클락 프로바이더를 신뢰하는 AWS IAM 롤 생성
-# 키클락 로그인용 롤이라는 것을 명시하기 위해 "keycloak-role-" 이란 prefix를 붙임
+# 키클록 프로바이더를 신뢰하는 AWS IAM 롤 생성
+# 키클록 로그인용 롤이라는 것을 명시하기 위해 "keycloak-role-" 이란 prefix를 붙임
 resource "aws_iam_role" "this" {
   for_each           = local.aws_roles
   name               = "keycloak-role-${each.value.name}"
@@ -74,9 +74,9 @@ resource "aws_iam_role_policy_attachment" "this" {
 }
 
 ###################################################
-# 키클락 그룹 구성
+# 키클록 그룹 구성
 ###################################################
-# 키클락 그룹 생성
+# 키클록 그룹 생성
 resource "keycloak_group" "this" {
   for_each = local.keycloak_groups
   realm_id = local.keycloak_realm_id
@@ -91,7 +91,7 @@ resource "keycloak_group" "this" {
 }
 
 # is_default = true 속성이 있는 그룹인 경우, 디폴트그룹으로 설정
-# 디폴트그룹 : 해당 키클락 realm 내에서 유저가 새로 생성될 때 자동으로 조인될 그룹
+# 디폴트그룹 : 해당 키클록 realm 내에서 유저가 새로 생성될 때 자동으로 조인될 그룹
 resource "keycloak_default_groups" "this" {
   realm_id = local.keycloak_realm_id
   group_ids = [
@@ -101,10 +101,10 @@ resource "keycloak_default_groups" "this" {
 }
 
 ###################################################
-# 키클락 롤 구성
+# 키클록 롤 구성
 ###################################################
-# AWS IAM 롤과 1대1 관계인 키클락 롤 생성
-# 롤의 이름은 "{AWS 키클락 SAML 프로바이더 ARN},{AWS IAM 롤 ARN}" 형식이어야 한다
+# AWS IAM 롤과 1대1 관계인 키클록 롤 생성
+# 롤의 이름은 "{AWS 키클록 SAML 프로바이더 ARN},{AWS IAM 롤 ARN}" 형식이어야 한다
 resource "keycloak_role" "this" {
   for_each    = local.aws_roles
   realm_id    = local.keycloak_realm_id
@@ -123,7 +123,7 @@ resource "keycloak_role" "this" {
 ###################################################
 # 그룹-롤 매핑
 ###################################################
-# 유저가 스스로 본인 계정 정보를 확인하고 비밀번호를 변경할 수 있는 키클락 내장 롤 검색
+# 유저가 스스로 본인 계정 정보를 확인하고 비밀번호를 변경할 수 있는 키클록 내장 롤 검색
 # -> account 클라이언트의 manage-account 롤의 id를 알아내야 한다
 data "keycloak_openid_client" "account" {
   realm_id  = local.keycloak_realm_id
@@ -136,7 +136,7 @@ data "keycloak_role" "manage_account" {
   name      = "manage-account"
 }
 
-# 키클락 그룹별 각자 사용해야 할 롤들 + manage-account 롤을 연결
+# 키클록 그룹별 각자 사용해야 할 롤들 + manage-account 롤을 연결
 resource "keycloak_group_roles" "this" {
   for_each = local.keycloak_groups
   realm_id = local.keycloak_realm_id

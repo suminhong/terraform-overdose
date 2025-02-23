@@ -34,7 +34,7 @@ resource "kubernetes_storage_class_v1" "gp3" {
 }
 
 ###################################################
-# [코드 16-7 & 8] aws-auth configMap data 덮어쓰기
+# [코드 16-7 & 8] aws-auth ConfigMap data 덮어쓰기
 # Deprecate될 방법이므로 참고만 하자
 ###################################################
 # locals {
@@ -67,7 +67,7 @@ resource "kubernetes_storage_class_v1" "gp3" {
 #   }
 # }
 
-# # AWS-AUTH 컨피그맵 데이터 수정
+# # AWS-AUTH ConfigMap 데이터 수정
 # resource "kubernetes_config_map_v1_data" "aws_auth" {
 #   metadata {
 #     name      = "aws-auth"
