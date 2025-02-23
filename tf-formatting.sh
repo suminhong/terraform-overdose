@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Appendix/D-2
 echo '🚀 모든 하위 경로의 Terraform Document를 생성합니다 ...'
 # 현재 디렉토리부터 하위 디렉토리까지 검색
 find . -type f -name "*.tf" | while read -r tf_file; do
@@ -17,6 +18,7 @@ done
 echo '✅ Terraform Document 생성 완료'
 
 
+# Appendix/A-2
 echo '🚀 모든 하위 경로의 Terraform File들을 포맷팅합니다 ...'
 terraform fmt -recursive
 echo '✅ Terraform File 포맷팅 완료'

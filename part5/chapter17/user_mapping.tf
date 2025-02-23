@@ -13,7 +13,7 @@ locals {
 }
 
 ###################################################
-# IAM 롤 구성
+# IAM 역할 구성
 ###################################################
 # 키클록 프로바이더를 신뢰하는 정책 검색
 data "aws_iam_policy_document" "this" {
@@ -32,8 +32,8 @@ data "aws_iam_policy_document" "this" {
   }
 }
 
-# 키클록 프로바이더를 신뢰하는 AWS IAM 롤 생성
-# 키클록 로그인용 롤이라는 것을 명시하기 위해 "keycloak-role-" 이란 prefix를 붙임
+# 키클록 프로바이더를 신뢰하는 AWS IAM 역할 생성
+# 키클록 로그인을 위한 역할이라는 것을 명시하기 위해 keycloak-role- 접두사를 붙인다.
 resource "aws_iam_role" "this" {
   for_each           = local.aws_roles
   name               = "keycloak-role-${each.value.name}"
@@ -48,13 +48,13 @@ resource "aws_iam_role" "this" {
   )
 }
 
-# 각 AWS IAM 롤에 연결할 IAM 정책 검색
+# 각 AWS IAM 역할에 연결할 IAM 정책 검색
 data "aws_iam_policy" "this" {
   for_each = toset(distinct(flatten([for k, v in local.aws_roles : v.policies])))
   name     = each.value
 }
 
-# "{롤}_{권한}" 매핑 정보를 머지된 형태로 반환
+# "{역할}_{권한}" 매핑 정보를 머지된 형태로 반환(9.3절의 유틸리티 모듈 사용)
 module "merge_role_policy_attachments" {
   source = "../../modules/chapter9_utility/3_merge_map_in_list"
   input = flatten([
@@ -66,7 +66,7 @@ module "merge_role_policy_attachments" {
   ])
 }
 
-# "{롤}_{권한}" 매핑 정보를 통해 롤-권한 연결
+# "{역할}_{권한}" 매핑 정보를 통해 역할-권한 연결
 resource "aws_iam_role_policy_attachment" "this" {
   for_each   = module.merge_role_policy_attachments.output
   role       = aws_iam_role.this[each.value.name].name
@@ -91,7 +91,7 @@ resource "keycloak_group" "this" {
 }
 
 # is_default = true 속성이 있는 그룹인 경우, 디폴트그룹으로 설정
-# 디폴트그룹 : 해당 키클록 realm 내에서 유저가 새로 생성될 때 자동으로 조인될 그룹
+# 디폴트 그룹: 해당 키클록 realm 내에서 사용자가 새로 생성될 때 자동으로 속할 그룹
 resource "keycloak_default_groups" "this" {
   realm_id = local.keycloak_realm_id
   group_ids = [
@@ -101,10 +101,10 @@ resource "keycloak_default_groups" "this" {
 }
 
 ###################################################
-# 키클록 롤 구성
+# 키클록 역할 구성
 ###################################################
-# AWS IAM 롤과 1대1 관계인 키클록 롤 생성
-# 롤의 이름은 "{AWS 키클록 SAML 프로바이더 ARN},{AWS IAM 롤 ARN}" 형식이어야 한다
+# AWS IAM 역할과 1대1 관계인 키클록 역할 생성
+# 역할 이름은 "{AWS 키클록 SAML 프로바이더 ARN},{AWS IAM 역할 ARN}" 형식이어야 한다.
 resource "keycloak_role" "this" {
   for_each    = local.aws_roles
   realm_id    = local.keycloak_realm_id
@@ -121,10 +121,10 @@ resource "keycloak_role" "this" {
 }
 
 ###################################################
-# 그룹-롤 매핑
+# 그룹-역할 매핑
 ###################################################
-# 유저가 스스로 본인 계정 정보를 확인하고 비밀번호를 변경할 수 있는 키클록 내장 롤 검색
-# -> account 클라이언트의 manage-account 롤의 id를 알아내야 한다
+# 사용자가 스스로 본인 계정 정보를 확인하고 비밀번호를 변경할 수 있는 키클록 내장 역할 검색
+# account 클라이언트의 manage-account 역할의 아이디를 알아내야 한다.
 data "keycloak_openid_client" "account" {
   realm_id  = local.keycloak_realm_id
   client_id = "account"
@@ -136,7 +136,7 @@ data "keycloak_role" "manage_account" {
   name      = "manage-account"
 }
 
-# 키클록 그룹별 각자 사용해야 할 롤들 + manage-account 롤을 연결
+# 키클록 그룹별 각자 사용해야 할 역할들 + manage-account 역할을 연결
 resource "keycloak_group_roles" "this" {
   for_each = local.keycloak_groups
   realm_id = local.keycloak_realm_id
@@ -145,6 +145,6 @@ resource "keycloak_group_roles" "this" {
   role_ids = concat([
     for r in each.value.aws_roles : keycloak_role.this[r].id
     ], [
-    data.keycloak_role.manage_account.id # account/manage-account role
+    data.keycloak_role.manage_account.id # account/manage-account 역할
   ])
 }

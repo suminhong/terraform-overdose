@@ -1,6 +1,6 @@
 resource "aws_security_group" "example_sg" {
   name        = "manually-created-sg"
-  description = "수동으로 만든 보안그룹"
+  description = "수동으로 만든 보안 그룹"
   vpc_id      = "vpc-example"
 }
 

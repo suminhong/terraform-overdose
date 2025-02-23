@@ -18,7 +18,7 @@ locals {
 
 provider "keycloak" {
   client_id     = "terraform"
-  client_secret = ""
+  client_secret = "" # 앞 단계에서 복사한 클라이언트 시크릿
   url           = local.keycloak_url
   base_path     = "/"
 }

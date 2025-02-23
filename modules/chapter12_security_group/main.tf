@@ -92,7 +92,7 @@ resource "aws_security_group_rule" "inbound" {
   self = each.value.source == "self" ? true : null
   # 영문자가 존재하지 않으면 CIDR값으로 사용 / custom_cidr_keyword 맵에 존재하는 이름인 경우 그 값 사용
   cidr_blocks = length(regexall("[a-z]", each.value.source)) == 0 ? [each.value.source] : try(local.custom_cidr_keyword[each.value.source], null)
-  # source가 접두사목록 id 이거나 보안그룹 id인 경우
+  # source가 접두사목록 id 이거나 보안 그룹 id인 경우
   prefix_list_ids          = startswith(each.value.source, "pl-") ? [each.value.source] : null
   source_security_group_id = startswith(each.value.source, "sg-") ? each.value.source : null
   # description이 존재하지 않는 경우, source에 있는 값 사용
