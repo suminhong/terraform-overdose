@@ -15,6 +15,6 @@ subnets:
 nat:
   create: true
   subnet: pub-nat
-  per_az: true # nat.subnet의 가용영역별로 생성
+  per_az: true # nat.subnet의 가용 영역별로 생성
 
 # 추가로 고려할만한 구성 : rtb_override

@@ -2,9 +2,8 @@ module "vpc" {
   for_each = local.vpc_set
   source   = "../modules/vpc"
 
-
   name     = each.key
   vpc_cidr = yamldecode(file("${local.info_files}/${each.key}/vpc.yaml"))["cidr"]
   env      = yamldecode(file("${local.info_files}/${each.key}/vpc.yaml"))["env"]
-  (생략) 
+  (생략)
 }

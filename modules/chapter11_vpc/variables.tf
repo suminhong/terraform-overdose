@@ -34,7 +34,7 @@ variable "attribute" {
     error_message = "[${local.vpc_name} VPC] 한 VPC 내에서 서브네팅을 위한 netnum은 겹칠 수 없습니다."
   }
 
-  validation { # 6. Subnet들의 netnum list의 길이가 모두 subnet_azs 보다 작은가?
+  validation { # 6. Subnet들의 netnum list의 길이가 모두 subnet_azs보다 작은가?
     condition     = alltrue([for k, v in var.attribute.subnets : length(v) <= length(var.attribute.subnet_azs)])
     error_message = "[${local.vpc_name} VPC] 각 subnet의 netnum list 길이는 subnet_azs의 길이 (${length(var.attribute.subnet_azs)}) 보다 짧아야 합니다."
   }

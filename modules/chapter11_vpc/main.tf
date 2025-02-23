@@ -93,7 +93,7 @@ locals {
 ###################################################
 locals {
   # 반복을 수월하게 돌리기 위한 데이터 처리 작업
-  # 2차원을 1차원으로 평탄화 필요 - 리스트로 flatten 사용
+  # 2차원을 1차원으로 평탄화 필요: 리스트로 flatten 사용
   subnets_data = flatten([
     for name, indices in local.subnets : [
       for idx in indices : {
@@ -132,9 +132,8 @@ resource "aws_subnet" "this" {
       error_message = "[${local.vpc_name} VPC] ${upper(each.value.az)} zone은 현재 리전(${local.region_name})에서 유효하지 않습니다. 사용 가능한 영역 : [${join(", ", [for az in local.available_azs : trimprefix(az, local.region_name)])}]"
     }
 
-    precondition { # 4. 서브넷의 이름이 pub or pri 로 시작하는가?
-      # condition     = contains(["pub", "pri"], split("-", each.value.name)[0])
-      condition     = startswith(each.value.name, "pub-") || startswith(each.value.name, "pri-")
+    precondition { # 4. 서브넷의 이름이 pub or pri로 시작하는가?
+      condition     = contains(["pub", "pri"], split("-", each.value.name)[0])
       error_message = "[${local.vpc_name} VPC] ${each.value.name} 이란 서브넷 이름은 유효하지 않습니다. subnets 이름들은 모두 [pub-, pri-] 중 하나로 시작해야 합니다."
     }
   }

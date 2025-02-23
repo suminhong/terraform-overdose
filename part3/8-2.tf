@@ -10,6 +10,7 @@ data "aws_ami" "this" {
 resource "aws_instance" "x86_64" {
   ami           = data.aws_ami.this.id
   instance_type = "t3.medium"
+  
   # 추가 매개변수
 
   lifecycle {

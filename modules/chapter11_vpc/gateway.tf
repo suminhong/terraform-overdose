@@ -18,8 +18,8 @@ resource "aws_internet_gateway" "this" {
 resource "aws_route" "public_igw" {
   count = local.enable_igw ? 1 : 0
 
-  route_table_id         = local.public_rt
   destination_cidr_block = "0.0.0.0/0"
+  route_table_id         = aws_route_table.public[count.index].id
   gateway_id             = aws_internet_gateway.this[count.index].id
 }
 
@@ -30,8 +30,8 @@ resource "aws_route" "public_igw" {
 locals {
   nat = var.attribute.nat
 
-  # nat.per_az == true인 경우: nat.subnet 서브넷의 가용 영역만큼 NAT 생성
-  # nat.per_az == false인 경우: 한개만 생성
+  # nat.per_az == true인 경우: nat.subnet 서브넷의 가용 영역만큼 NAT 게이트웨이 생성
+  # nat.per_az == false인 경우: 한 개만 생성
   nat_azs = slice(local.subnet_azs, 0, local.nat.per_az ? try(length(local.subnets[local.nat.subnet]), 0) : 1)
   nat_set = local.nat.create ? toset(local.nat_azs) : toset([])
 }
