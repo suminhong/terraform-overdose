@@ -23,7 +23,7 @@ resource "aws_kms_alias" "this" {
 }
 
 ###################################################
-# EKS 컨트롤플레인 로깅을 위한 Cloudwatch 로그그룹 생성
+# EKS 컨트롤 플레인 로깅을 위한 Cloudwatch 로그 그룹 생성
 ###################################################
 resource "aws_cloudwatch_log_group" "this" {
   name              = local.cw_loggroup_name
@@ -63,7 +63,7 @@ resource "aws_eks_cluster" "this" {
 
   access_config {
     authentication_mode = local.auth_mode
-    # aws_eks_access_entry.standard 를 통해 생성
+    # aws_eks_access_entry.standard를 통해 생성
     bootstrap_cluster_creator_admin_permissions = false
   }
 
@@ -90,17 +90,17 @@ resource "aws_eks_cluster" "this" {
   lifecycle {
     precondition {
       condition     = alltrue([for i in local.log_types : contains(local.allow_log_type, i)])
-      error_message = "[${local.cluster_name}.yaml/cluster_info.log_types] 유효하지 않은 log_type 이 있습니다. log_types 는 반드시 [${join(", ", local.allow_log_type)}] 중에서만 사용되어야 합니다."
+      error_message = "[${local.cluster_name}.yaml/cluster_info.log_types] 유효하지 않은 log_type이 있습니다. log_types는 반드시 [${join(", ", local.allow_log_type)}] 중에서만 사용되어야 합니다."
     }
 
     precondition {
       condition     = contains(local.allow_auth_mode, local.auth_mode)
-      error_message = "[${local.cluster_name}.yaml/cluster_info.auth_mode] ${local.auth_mode} : 유효하지 않은 auth_mode 입니다. auth_mode 는 반드시 [${join(", ", local.allow_auth_mode)}] 중 하나여야 합니다."
+      error_message = "[${local.cluster_name}.yaml/cluster_info.auth_mode] ${local.auth_mode} : 유효하지 않은 auth_mode입니다. auth_mode는 반드시 [${join(", ", local.allow_auth_mode)}] 중 하나여야 합니다."
     }
 
     precondition {
       condition     = contains(local.allow_upgrade_policy, local.upgrade_policy)
-      error_message = "[${local.cluster_name}.yaml/cluster_info.upgrade_policy] ${local.upgrade_policy} : 유효하지 않은 upgrade_policy 입니다. upgrade_policy 는 반드시 [${join(", ", local.allow_upgrade_policy)}] 중 하나여야 합니다."
+      error_message = "[${local.cluster_name}.yaml/cluster_info.upgrade_policy] ${local.upgrade_policy} : 유효하지 않은 upgrade_policy입니다. upgrade_policy는 반드시 [${join(", ", local.allow_upgrade_policy)}] 중 하나여야 합니다."
     }
   }
 }
@@ -225,7 +225,7 @@ data "aws_iam_session_context" "current" {
 locals {
   access_entries = merge(
     {
-      # EKS Cluster를 생성하는 주체 (terraform 유저 또는 롤) 에 EKSClusterAdmin 권한 부여
+      # EKS Cluster를 생성하는 주체 (terraform 유저 또는 롤)에 EKSClusterAdmin 권한 부여
       cluster_creator = {
         principal_arn = data.aws_iam_session_context.current.issuer_arn
         k8s_groups    = null
@@ -291,12 +291,12 @@ resource "aws_eks_access_policy_association" "standard" {
   lifecycle {
     precondition {
       condition     = contains(local.allow_access_entry_policy_name, each.value.policy)
-      error_message = "[${local.cluster_name}/access_entrie/${each.value.principal_arn}/${each.value.policy}] 유효하지 않은 policy 입니다. policy는 반드시 [${join(", ", local.allow_access_entry_policy_name)}] 중 하나여야 합니다."
+      error_message = "[${local.cluster_name}/access_entrie/${each.value.principal_arn}/${each.value.policy}] 유효하지 않은 policy입니다. policy는 반드시 [${join(", ", local.allow_access_entry_policy_name)}] 중 하나여야 합니다."
     }
 
     precondition {
       condition     = contains(local.allow_access_entry_policy_type, each.value.type)
-      error_message = "[${local.cluster_name}/access_entrie/${each.value.principal_arn}/${each.value.policy}] 유효하지 않은 type 입니다. type은 반드시 [${join(", ", local.allow_access_entry_policy_type)}] 중 하나여야 합니다."
+      error_message = "[${local.cluster_name}/access_entrie/${each.value.principal_arn}/${each.value.policy}] 유효하지 않은 type입니다. type은 반드시 [${join(", ", local.allow_access_entry_policy_type)}] 중 하나여야 합니다."
     }
   }
 }

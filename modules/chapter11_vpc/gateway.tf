@@ -1,7 +1,7 @@
 ###################################################
 # Internet Gateway
 ###################################################
-# 인터넷 게이트웨이 생성 - public subnet이 하나라도 있는 경우
+# 인터넷 게이트웨이 생성: public subnet이 하나라도 있는 경우
 resource "aws_internet_gateway" "this" {
   count  = local.enable_igw ? 1 : 0
   vpc_id = local.vpc_id
@@ -30,7 +30,7 @@ resource "aws_route" "public_igw" {
 locals {
   nat = var.attribute.nat
 
-  # nat.per_az == true인 경우: nat.subnet 서브넷의 가용 영역만큼 NAT 게이트웨이 생성
+  # nat.per_az == true인 경우: nat.subnet 서브넷의 가용 영역마다 NAT 게이트웨이 생성
   # nat.per_az == false인 경우: 한 개만 생성
   nat_azs = slice(local.subnet_azs, 0, local.nat.per_az ? try(length(local.subnets[local.nat.subnet]), 0) : 1)
   nat_set = local.nat.create ? toset(local.nat_azs) : toset([])

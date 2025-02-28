@@ -54,7 +54,7 @@ resource "aws_instance" "this" {
   subnet_id              = var.subnet_id_map[each.value.subnet][each.value.az]
   vpc_security_group_ids = [for sg_name in each.value.security_groups : var.sg_id_map[sg_name]]
 
-  # optional: 입력 안할 시 null값이 들어간다.
+  # optional: 입력 안 할 시 null 값이 들어간다.
   iam_instance_profile = each.value.ec2_role
   key_name             = each.value.ec2_key
   private_ip           = each.value.private_ip

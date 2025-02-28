@@ -90,7 +90,7 @@ resource "keycloak_group" "this" {
   )
 }
 
-# is_default = true 속성이 있는 그룹인 경우, 디폴트그룹으로 설정
+# is_default = true 속성이 있는 그룹인 경우, 디폴트 그룹으로 설정
 # 디폴트 그룹: 해당 키클록 realm 내에서 사용자가 새로 생성될 때 자동으로 속할 그룹
 resource "keycloak_default_groups" "this" {
   realm_id = local.keycloak_realm_id
@@ -136,7 +136,7 @@ data "keycloak_role" "manage_account" {
   name      = "manage-account"
 }
 
-# 키클록 그룹별 각자 사용해야 할 역할들 + manage-account 역할을 연결
+# 키클록 그룹별로 부여할 역할 + manage-account 역할을 연결
 resource "keycloak_group_roles" "this" {
   for_each = local.keycloak_groups
   realm_id = local.keycloak_realm_id
