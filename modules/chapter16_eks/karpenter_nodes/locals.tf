@@ -5,7 +5,7 @@ locals {
   k8s_labels = merge(
     var.k8s_labels,
     {
-      "app.terraform-book/tf-module" = "eks.karpenter-nodes"
+      "app.terraform-overdose/tf-module" = "eks.karpenter-nodes"
     },
     var.attribute.k8s_labels
   )

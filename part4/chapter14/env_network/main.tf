@@ -20,7 +20,7 @@ data "terraform_remote_state" "vpc" {
   for_each = toset(local.tf_vpc_env_list)
   backend  = "s3"
   config = {
-    bucket  = "terraform-book-tfstate"
+    bucket  = "terraform-overdose-tfstate"
     key     = "${each.key}.tfstate"
     region  = "ap-northeast-2"
     profile = "terraform"

@@ -114,9 +114,9 @@ karpenter:
         schedule: "@daily"
         duration: 30m
     k8s_labels:
-      node-label.terraform-book/type: stateless
-      node-label.terraform-book/karpenter: stateless-01
-      node-label.terraform-book/compute: cpu
+      node-label.terraform-overdose/type: stateless
+      node-label.terraform-overdose/karpenter: stateless-01
+      node-label.terraform-overdose/compute: cpu
   
   stateful-01:
     subnet_name_list: [pri-eks]
@@ -135,8 +135,8 @@ karpenter:
       budgets:
       - nodes: "0"
     taints:
-      node-taint.terraform-book/stateful: true
+      node-taint.terraform-overdose/stateful: true
     k8s_labels:
-      node-label.terraform-book/type: stateful
-      node-label.terraform-book/karpenter: stateful-01
-      node-label.terraform-book/compute: cpu
+      node-label.terraform-overdose/type: stateful
+      node-label.terraform-overdose/karpenter: stateful-01
+      node-label.terraform-overdose/compute: cpu

@@ -30,8 +30,8 @@ locals {
   tf_desc = local.common_vars.tf_desc
 
   k8s_labels = {
-    "app.terraform-book/managed-by" = "Terraform"
-    "app.terraform-book/tf-module"  = "eks"
+    "app.terraform-overdose/managed-by" = "Terraform"
+    "app.terraform-overdose/tf-module"  = "eks"
   }
 
   module_tags = merge(
