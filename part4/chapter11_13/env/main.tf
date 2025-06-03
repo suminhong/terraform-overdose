@@ -56,7 +56,7 @@ module "ec2" {
   vpc_id   = module.vpc[each.key].vpc_id
 
   subnet_id_map = module.vpc[each.key].subnet_ids_with_az
-  sg_id_map     = module.sg[each.value].sg_id
+  sg_id_map     = module.sg[each.key].sg_id
 
   ec2_set = {
     for ec2file in fileset(local.info_files, "${each.key}/ec2/*.yaml") :
